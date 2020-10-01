@@ -21,8 +21,7 @@ En este muestreo se realizaron 2 transectos de 100 m en cada localidad, y se eva
 
 ```{r 2012-2014}
 F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Series,Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover))
-Georeferencia<-F11110351 %>% group_by(Site,Date) %>% filter() 
-unique(F11110351$Longitude)
+F11110351 %>% group_by(Site,Date) %>% unique(Latitud)
 
 
 
