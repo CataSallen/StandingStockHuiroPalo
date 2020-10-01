@@ -1,0 +1,61 @@
+---
+title: "Ordenamiento Bases de datos"
+author: "Catalina Ruz"
+date: "25 de septiembre de 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning=FALSE, error = F, message = F)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(stringr)
+```
+
+## Ordenamiento de bases de datos
+###2012-1014
+Primera base de datos proviene de un proyecto fondecytF11110351, y tiene información obtenida en terreno de las temporadas de otoño y primavera para los años 2012-2013 y para la temporada de verano del 2014.
+
+En este muestreo se realizaron 2 transectos de 100 m en cada localidad, y se evaluó la abundancia y diámetro del disco de las macroalgas en cuadrantes de 1m2 a cada lado del transecto en estaciones cada 10 m.
+
+```{r 2012-2014}
+F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Series,Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover))
+Georeferencia<-F11110351 %>% group_by(Site,Date) %>% filter() 
+unique(F11110351$Longitude)
+
+
+
+unidfLat <- F11110351[!duplicated(F11110351$Latitude), ]
+unidfLong <- F11110351[!duplicated(F11110351$Longitude), ]
+```
+
+La segunda base de datos proviene de otro proyecto fondecyt F1140841 donde se realizó un sólo muestreo, por lo que sólo se tiene información para la temporada de verano 2015, donde se realizaron transectos de 50 m, y se medió la abundancia de algas, diámetro del disco, y algunas otras variables morfológicas, en cuadrantes de 1m2 a cada lado del transecto en estaciones cada 10 m.
+
+```{r 2015}
+F1140841<-read.csv("2015.csv") 
+F1140841 %>% filter(Subset == "kelp") 
+```
+
+La tercera base de datos es un proyecto fondecyt 1151094 donde se realizaron muestreos en transectos de 25 m en zonas profundas y zonas someras. Habría que hacer un promedio de los 6 transectos. Y se realizaron cuadrantes, a cada lado del transecto, no en todos los casos.
+
+```{r 2015-2016}
+F1151094<-read.csv("2015-2017.csv") 
+F1151094 %>% filter(Habitat == "kelp") 
+
+```
+
+```{r GranData12-16}
+All
+```
+
+
+A partir de diferentes bases de datos (Tabla 1) provenientes de proyectos FONDECYT y monitoreos realizados en áreas de manejo de recursos bentónicos (AMERB) se realizará una estimación de la biomasa acumulada en las poblaciones de Lessonia trabeculata, como un proxy de la productividad primaria de esta especie, para un total de 15 sitios, con información que fluctua desde el año 2012 al 2019.
+
+
+```{r, eval=F }
+Georeferencias<-read.csv("georeferencias.csv", sep=",")
+kable(Tabla, caption="Pasajeros clasificados por sexo y edad") %>% kable_styling(bootstrap_options = c("striped","hover", "condensed"), full_width = F)
+```
+
+
