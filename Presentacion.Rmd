@@ -1,0 +1,179 @@
+---
+title: "Productividad en Bosques de Macroalgas Pardas"
+author: "Catalina Ruz"
+date: "`r format(Sys.time(), '%d/%m, %Y')`"
+output: 
+    ioslides_presentation:
+      logo: logo.png
+      bibliography: Biblio.bib
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,warning=FALSE, error = F, message = F)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(stringr)
+library(broom)
+
+
+```
+
+
+# Introducción
+
+##Productividad {.smaller}
+-Las macroalgas aportan hasta un 10% de la productividad primaria neta mundial^1^
+
+-40% de su producción representa un excedente de crecimiento, el cual es utilizado por herbívoros, filtradores y suspensívoros, siendo la base de las cadenas tróficas y sustentando una diversidad de especies y pesquerías en las zonas costeras^2,3^.
+
+-Diferentes estimaciones de la productividad: Standing stock (Biomasa acumulada), Crecimiento de las láminas, Reclutamiento^4^
+
+
+```{r, out.width = "40%"}
+
+knitr::include_graphics("mapa conceptual.png")
+
+
+knitr::include_graphics("kelp_soreman.jpg")
+```
+
+## Problema
+
+-Disminución de las poblaciones a nivel global del ~2%, pero dependiendo de las perturbaciones esta tasa de cambio varía a través de las regiones donde se distribuyen^5^
+
+-Cambio climático, ya que los factores que determinan la productividad son^4^:
+        Temperatura < Luz < Nutrientes 
+
+-En Chile: extracción de las algas (i.e. Barreteo) para la obtención de alginatos ha sido intensa en la zona norte y poco a poco se ha ido extendiendo hacia la zona centro-sur^6^
+
+
+```{r, out.width = "40%", fig.align='right'}
+knitr::include_graphics("barreteo.png")
+```
+
+##Objetivos
+
+1.	Estimar la variación de la biomasa acumulada en los bosques submareales de *L. trabeculata* a lo largo de un gradiente latitudinal y temporal.
+
+2.	Comparar la variación de biomasa con variables ecológicas y ambientales que puedan estar determinando la productividad de *L. trabeculata* 
+
+##Hipótesis
+
+1. Los parametros para estimar la biomasa a partir de las tallas de *L. trabeculata* variará através de las diferentes localidades ya que diferentes factores ambientales determinan la morfología y crecimiento de estas macroalgas.  
+
+2. La productividad de *L. trabeculata*, estimada a partir de la biomasa acumulada (i.e. Standing stock) variará a lo largo de la distribución en un gradiente latitudinal conforme al cambio en las variaciones ambientales (i.e. temperatura). 
+
+3. Ya que *L. trabeculata* es una especie perenne, la biomasa acumulada en los bosques permanecerá estables a lo largo del año, independiente de la localidad.
+
+  
+#Metodología
+```{r, echo=FALSE}
+F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover)) %>% mutate(DF= rep("F11110351", times= length(Site)), Stipes= rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
+
+F1140841<-read.csv("2015.csv") %>% filter(Subset == "kelp") %>% select(-c(Subset,Temperature, Visbility, Holdfast.Use,Blade.Use,Cover...,X)) %>% mutate(DF= rep("F1140841", times= length(Site)),  a=rep("NA", times=length(Site)), b=rep("NA", times=length(Site)),allometric=rep("NA", times=length(Site)), Length=rep("NA", times=length(Site))) %>% rename(Station ="station", Size="Size.cm.", Stipes="no..stipes")
+
+
+
+F1151094<-read.csv("2015-2017.csv") %>% filter(Habitat == "kelp") %>% 
+  select(-c(Survey,Habitat,Sampler, High.1,High.2, Mean.High,comentario,Data_Entry,Num_parches)) %>%
+  mutate(DF=rep("F1151094", times= length(Site)),Season=rep("NA", times=length(Site)),Latitude=rep("NA", times=length(Site)), Longitude=rep("NA", times=length(Site)), a=rep("NA", times=length(Site)), b=rep("NA", times=length(Site)),allometric=rep("NA", times=length(Site)), Phase=rep("NA", times=length(Site)), Biomass=rep("NA", times=length(Site))) %>% rename(Series ="serie",  Station= "Station.replicate", Replicate= "Pseudoreplicate",Size= "Width")
+
+F1151094$Site[F1151094$Site == "Quintay "] = "Quintay"
+condicion1= (F1151094$Site== "Quintay") & (F1151094$Exposure =="exposed")
+condicion2= (F1151094$Site== "Quintay") & (F1151094$Exposure =="protected")
+condicion3= (F1151094$Site== "Los Molles") & (F1151094$Exposure =="exposed")
+condicion4= (F1151094$Site== "Los Molles") & (F1151094$Exposure =="protected")
+
+
+F1151094$Latitude[condicion1] = "-33.143806"
+F1151094$Longitude[condicion1]= "-71.711944"
+F1151094$Latitude[condicion2] = "-33.1919"
+F1151094$Longitude[condicion2] = "-71.701485"
+F1151094$Latitude[condicion3] = "-32.23857"
+F1151094$Longitude[condicion3] = "-71.52684"
+F1151094$Latitude[condicion4] = "-32.230642"
+F1151094$Longitude[condicion4] = "-71.523598"
+
+condicion5=(F1151094$Zone =="shallow") & (F1151094$Transect =="1") 
+F1151094$Transect[condicion5] = "4"
+condicion6=(F1151094$Zone =="shallow") & (F1151094$Transect =="2") 
+F1151094$Transect[condicion6] = "5"
+condicion7=(F1151094$Zone =="shallow") & (F1151094$Transect =="3") 
+F1151094$Transect[condicion7] = "6"
+
+
+F1151094std= F1151094 %>% select(-c(Exposure,Zone)) %>% mutate(Season=rep("NA", times=length(Site)))
+Alldata= rbind(F11110351,F1140841,F1151094std)
+
+```
+
+##Bases de datos{.smaller}
+- 3 Bases de datos de Fondecyt desde el año 2012-2017 con `r length(unique(Alldata$Site))` sitios
+      
+      -2012:2013 Otoño-Primaver
+      -2014:2015 Verano
+      -2015-2017 Diferentes temporadas
+      
+- 2 seguimientos a las AMERB 2018-2019
+- Estandarización de todas las df
+
+```{r, out.width = "40%", fig.align='center'}
+knitr::include_graphics("Tabla DF.png")
+```
+```{r, out.width = "30%"}
+knitr::include_graphics("Antes.png")
+knitr::include_graphics("Despues.png")
+```
+
+
+##Estimación de la Biomasa
+  **Relación Talla-Peso**
+  
+-Se evaluará la relación entre el Diámetro máximo del disco y el peso.
+-Se estiman los parámetros para establecer la relación alométrica dada por la ecuación:
+
+$$
+  \begin{aligned}
+  B = aL^b 
+  \end{aligned}
+$$ 
+  **Variación de la biomasa**
+
+1. Parametros(a,b) ~ Sitios
+2. Biomasa ~ Sitios
+3. Biomasa ~ Temporadas+Sitios
+ 
+
+
+
+
+#Resultados
+
+##Relaciones Talla-Peso
+```{r, echo= F, out.width = "60%"}
+
+Peso<-read.csv("pesoalgasIFOP.csv")
+
+ggplot(Peso, aes(x=Diametro.extraida , y=peso, group=AMERB))+ geom_point(aes(color=AMERB))
+
+model1<-lm(log(Diametro.extraida)~log(peso), data= Peso)
+
+Est<-tidy(model1)
+
+kable(Est)  %>% kable_styling(bootstrap_options = c("striped","hover","condensed"), full_width = F)
+
+
+#model2<-nls(Diametro.extraida~exp(Peso*lambda+ c), data= Peso,start= list(lambda=0.1, c = 0), data = For.Graph)
+```
+
+
+##Referencias{.smaller}
+
+1.Krause-Jensen, D., and C. M. Duarte. 2016. Substantial role of macroalgae in marine carbon sequestration. Nature Geoscience 9:737–742.
+2.Duarte, C. M., I. J. Losada, I. E. Hendriks, I. Mazarrasa, and N. Marbà. 2013. The role of coastal plant communities for climate change mitigation and adaptation. Nature Climate Change 3:961–968.
+3.Duarte, C. M. 2017. Reviews and syntheses: Hidden forests, the role of vegetated coastal habitats in the ocean carbon budget. Biogeosciences 14:301–310.
+4.Smale, D. A., A. Pessarrodona, N. King, M. T. Burrows, A. Yunnie, T. Vance, and P. Moore. 2020. Environmental factors influencing primary productivity of the forest-forming kelp Laminaria hyperborea in the northeast Atlantic. Scientific Report 10:1–12.
+5.Krumhansl, K. A., D. K. Okamoto, A. Rassweiler, M. Novak, J. J. Bolton, K. C. Cavanaugh, S. D. Connell, C. R. Johnson, B. Konar, S. D. Ling, F. Micheli, K. M. Norderhaug, A. Pérez-Matus, I. Sousa-Pinto, D. C. Reed, A. K. Salomon, N. T. Shears, T. Wernberg, R. J. Anderson, N. S. Barrett, A. H. Buschmann, M. H. Carr, J. E. Caselle, S. Derrien-Courtel, G. J. Edgar, M. Edwards, J. A. Estes, C. Goodwin, M. C. Kenner, D. J. Kushner, F. E. Moy, J. Nunn, R. S. Steneck, J. A. Vasquez, J. Watson, J. D. Witman, and J. E. K. Byrnes. 2016. Global patterns of kelp forest change over the past half-century. Proceedings of the National Academy of Sciences of the United States of America 113:13785–13790.
+6.Vásquez, J. A., S. Zuñiga, F. Tala, N. Piaget, D. C. Rodríguez, and J. M. A. Vega. 2014. Economic valuation of kelp forests in northern Chile: values of goods and services of the ecosystem. Journal of Applied Phycology 26:1081–1088.
