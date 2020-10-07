@@ -123,7 +123,12 @@ Vamos a unir estas 3 bases de datos
 Alldata= rbind(F11110351,F1140841,F1151094std) %>% group_by(Site,Season, Date)
 unique(Alldata$Site)
 ```
-std nombre de sitios 
+Necesito estandarizar los nombre de los sitios en esta planilla 
+
+```{r}
+
+```
+
 
 
 ##Estimación de Biomasa
@@ -138,9 +143,6 @@ $$
 $$ 
 
 ```{r}
-Alldata %>% group_by(Site,Season, Date) %>% summarise(Latitud= unique(Latitude), Longitude=unique(Longitude)) %>% arrange(Season)
- model<-lm(log(Diametro.extraida)~log(peso), data= Peso)
-
 
 Peso<-read.csv("pesoalgasIFOP.csv") 
 QuintayA<- Peso %>% filter(AMERB == "Quintay sector A")
@@ -152,13 +154,13 @@ model3<-lm(log(Diametro.extraida)~log(peso), data= Carrizal)
 
 ```
 
-  
-  
-  
+```{r}
 ggplot(Peso, aes(x=Diametro.extraida , y=peso, group=AMERB))+ geom_point(aes(color=AMERB))
 
-model1<-lm(log(Diametro.extraida)~log(peso), data= Peso)
 ```
+  
+  
+  
 
 
 
