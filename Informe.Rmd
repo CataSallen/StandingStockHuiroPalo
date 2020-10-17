@@ -31,33 +31,127 @@ library(MuMIn)
 
   Entre los principales factores ambientales que moduladan la productividad se encuentran la luz, la temperatura y los nutrientes (Edding et al. 2006, Smale et al. 2020, Wernberg et al. 2018). La luz tiene control directo sobre la fotosíntesis y el crecimiento, y esta varía durante las estaciones controlando los patrones de crecimiento anuales de las macroalgas pardas (Tala & Edding 2005, Wernberg 2019, Reed et al. 2008). Junto con la luz, la disponibilidad de nutrientes, principalmente el nitrógeno, también afectan el crecimiento, pero algunas especies de macroalgas pardas presentan estrategias de crecimiento, el cual es realizado durante las temporadas de mayor disponibilidad de nutrientes, y utilizando las reservas energéticas producidas en períodos de alta irradiación, cuando la fotosíntesis es máxima (Tala and Edding 2005, Edding et al. 2006). Finalmente, la temperatura es uno los factores más importantes descritos que determinan la productividad primaria, considerándose el calentamiento global como una de las más grandes amenazas que están enfrentando los bosques de macroalgas pardas a nivel global (Bearham et al. 2013, Smale 2020). Así, la interacción entre estos factores ambientales, y su variación en el tiempo pueden modular los patrones de producción de las poblaciones de macroalgas pardas (Graham et al. 2007).
 
-  En Chile, los fondos submareales rocosos están dominador por Lessonia trabeculata  (Villouta and Santelices 1986), quien presenta una distribución desde los 18º hasta los 40ºS, y alcanza profundidades de hasta 40 m (Thiel et al. 2007). Aunque tiene características perennes, la dinámica de sus poblaciones se ha visto estar ampliamente determinada por los factores ambientales y ecológicos de mesoescala (10-100s km) (Vega et al. 2005, Pérez-Matus et al. 2017). Al mismo tiempo, a lo largo de su distribución, las poblaciones de ^L. trabeculata^ son mantenidas por procesos de surgencia asociados a la corriente de Humboldt, los cuales se ha descrito que tienen una importante función sobre la resiliencia de las poblaciones frente a Eventos de Oscilación del sur El Niño (ENSO), promoviendo una mayor estabilidad térmica y el aporte de nutrientes, evitando el colapso de las poblaciones durante estos eventos (Vega et al. 2005), al igual que frente a otros estresores como las presiones de herbivoría (Pérez-Matus et al. 2017, Thiel et al. 2007). A diferencia de otras poblaciones de macroalgas en el mundo, una de las principales amenazas de esta especie es la explotación, donde el alga secay picada es exportada hacia el mercado asiatico, para la obtención de alginatos (Vásquez et al. 2014). Desde el año 2002, la explotación de estas algas aumentó exponencialmente a lo largo de la costa norte de Chile, donde actualmente existe un manejo de la pesquería mediante cuotas y vedas. La extracción actualmente se ha expandido hacia la zona sur del país, sin ningún tipo de restricción, excepto la que rige sobre las áreas de manejo y recursos bentónicos, y muy pocos estudios han logrado entender el efecto sobre las comunidades asociadas a estas macroalgas.
+  En Chile, los fondos submareales rocosos están dominador por Lessonia trabeculata  (Villouta and Santelices 1986), quien presenta una distribución desde los 18º hasta los 40ºS, y alcanza profundidades de hasta 40 m (Thiel et al. 2007). Aunque tiene características perennes, la dinámica de sus poblaciones se ha visto estar ampliamente determinada por los factores ambientales y ecológicos de mesoescala (10-100s km) (Vega et al. 2005, Pérez-Matus et al. 2017). A lo largo de su distribución, las poblaciones de ^L. trabeculata^ son favorecidas por procesos de surgencia asociados a la corriente de Humboldt, que aumentan la resiliencia de las poblaciones frente a Eventos de Oscilación del sur El Niño (ENSO), ya que estas condiciones proven una mayor estabilidad térmica y aporte de nutrientes (Vega et al. 2005). Sin embargo, las poblaciones de L. trabeculata han ido disminuyendo principalmente debido a la explotación de estas algas, que desde el año 2002 fue incrementando a lo largo de la costa norte de Chile, donde actualmente existe un manejo de la pesquería mediante cuotas y vedas (Vásquez et al. 2014). La extracción actualmente se ha expandido hacia la zona sur del país, sin ningún tipo de restricción, excepto la que rige sobre las áreas de manejo y recursos bentónicos (AMERB), y muy pocos estudios han logrado entender el efecto sobre las comunidades asociadas a estas macroalgas. Bajo el contexto de explotación de ^L. trabeculata^ y la variación en las condiciones ambientales por causa del cambio climático, se hace relevante realizar estimaciones sobre los procesos ecosistémicos que estas algas proveen, como lo es la productividad primaria (Pettorelli et al. 2017)
+  
+  ^Lessonia trabeculata^, al igual que otras macroalgas, se ha descrito por tener una estrategia de anticipación a la temporada y presenta un periodo de mayor crecimiento durante los meses de octubre y noviembre con una producción de 0.04 g d-1 de peso seco diario (Tala and Edding 2007). Este crecimiento ocurre en el tejido meristemático ubicado entre la base de las láminas y el estipe, y a medida que las láminas crecen, el tejido se pierde en la zona apical, tejido que es traspasado a la producción secundaria o hacia la columna de agua como material particulado (Tala and Edding 2005, 2007, Edding et al. 2006). Hasta 11 g de peso seco m^2 d^1 (2.46 gC m^2 d^1, Tala and Edding 2007) es producido por esta especie, y junto con ^L. spicata^ presentan valores altamente superiores al compararlas con otras macroalgas pardas (Krumhansl and Scheibling 2012). Sin embargo, esta estimación corresponde a una población específica en la zona norte de Chile, específicamente en la localidad de Tongoy (30º15’S–71º15’W) (Tala and Edding 2007), y no existen otras estimaciones de la productividad de L. trabeculata a lo largo de la costa de Chile.
+  
+  Tanto las mediciones directas de la biomasa a intervalos de tiempo y área (i.e. Standing stock), como las mediciones del crecimiento, han sido considerados como buenos proxys de la productividad (Edding et al. 2006), y la información de la densidad, morfología y tallas de ^L. trabeculata^ son útiles para realizar estas estimaciones a partir de poblaciones naturales a lo largo de su distribución. Para poder extrapolar la información de biomasa a partir de las tallas del disco, los parámetros para la especie han sido descritos a través de una relación exponencial (Vásquez 1991). Sin embargo, es relevante entender que las formas de crecimiento en esta especie varían según las condiciones locales (i.e exposición, herbivoría, entre otros) y por lo tanto esta relación puede variar a lo largo de su distribución.
 
+   Al igual como se ha observado en otras especies de macroalgas pardas se espera que la productividad varíe a lo largo de un gradiente latitudinal debido al cambio en las condiciones ambientales (i.e. temperatura). En un contexto temporal, se sabe que los patrones de crecimiento están ampliamente determinados por las condiciones ambientales a lo largo de las estaciones del año (Tala and Edding 2007, Smale et al. 2020). Sin embargo, la variación en la biomasa acumulada para especies perennes como ^L. trabeculata^, debería permanecer estable a lo largo del año independiente de la localidad, a menos que la población sea explotada. Uno de los efectos descritos a causa de la explotación de estas algas ha sido la disminución en la estructura de tallas de las poblaciones naturales, donde algas con discos más pequeños empiezan a dominar el bosque, en un proceso denominado juvenilización (Figueroa-Fabrega et al. 2017). La disminución de las tallas en las poblaciones, se verá reflejada directamente en la biomasa acumulada en las poblaciones naturales, por lo que sitios con mayor historia de explotación debieran reflejar una menor producción de biomasa. 
 
-^Lessonia trabeculata^, al igual que otras macroalgas, se ha descrito por tener una estrategia de anticipación a la temporada y presenta un periodo de mayor crecimiento durante los meses de octubre y noviembre con una producción de 0.04 g d-1 de peso seco diario (Tala and Edding 2007).Este crecimiento ocurre en el tejido meristemático ubicado entre la base de las láminas y el estipe, y a medida que las láminas crecen, el tejido se pierde en la zona apical, tejido que es utilizado por la producción secundaria o como material particulado (Tala and Edding 2005, 2007, Edding et al. 2006).
+## Objetivos 
 
+1.	Determinar los parámetros de la relación entre la longitud del disco y el peso de ^L. trabeculata^ en diferentes localidades de la zona norte y centro de Chile y evaluar su variación respecto de estimaciones descritas anteriormente.
 
-Bajo el contexto de explotación de ^L. trabeculata^ y la variación en las condiciones ambientales por causa del cambio climático, se hace relevante realizar estimaciones sobre los procesos ecosistémicos que estas algas proveen, como lo es la productividad primaria (Pettorelli et al. 2017). ^L. trabeculata^ pueden alcanzar hasta 11 g peso seco m^2 d^1 (2.46 gC m^2 d^1, Tala and Edding 2007) y junto con ^L. spicata^ presentan valores altamente superiores al compararlas con otras macroalgas pardas (Krumhansl and Scheibling 2012). Sin embargo, esta estimación corresponde a una población específica en la zona norte de Chile, específicamente en la localidad de Tongoy (30º15’S–71º15’W) (Tala and Edding 2007), y no existen otras estimaciones de la productividad de L. trabeculata a lo largo de la costa de Chile. Recientemente, evaluaciones de la productividad para esta misma especie en la costa sur de Perú fueron descritas a partir de las poblaciones naturales con un promedio de 431 Kg de Carbono por hectarea, lo que permite una segunda comparación proveniente de una localidad cercana al extremo norte de su distribución (Aller-Rojas et al. 2020). Al igual como se ha observado en otras especies se espera que la productividad a lo largo de la distribución de L. trabeculata (>22º de latitud) varíe conforme a las variaciones ambientales que también fluctúan a lo largo del gradiente latitudinal (i.e. temperatura). 
-En un contexto temporal, se sabe que los patrones de crecimiento están ampliamente determinados por las condiciones ambientales a lo largo de las estaciones del año (Tala and Edding 2007, Smale et al. 2020). Sin embargo, la variación en la biomasa acumulada para especies perennes como L. trabeculata, debería permanecer estable a lo largo del año independiente de la localidad. Por otro lado, las condiciones ambientales a en un contexto temporal más amplio, han variado en los últimos años (e.g. ENSO 2015/2016, o disminución en la intensidad de la surgencia, Jacox et al. 2016, Weidberg et al. 2020), por lo que información de la variabilidad ambiental como la temperatura y la concentración de nutrientes, los cuales pueden ser obtenidos a partir de imágenes satelitales, pueden ser relacionados con la variación en la biomasa acumulada para una serie de tiempo a lo largo de diferentes años.
-
-
-Tanto las mediciones directas de la biomasa a intervalos de tiempo y área (i.e. Standing stock), como las mediciones del crecimiento, han sido considerados como buenos métodos de estimación de la productividad (Edding et al. 2006), información de la densidad, morfología y biomasa de L. trabeculata obtenidas en terreno son útiles para realizar estimaciones de la producción en las poblaciones naturales a lo largo de su distribución. Para poder extrapolar la información de biomasa a partir de las tallas del disco, los parámetros para la especie han sido descritos a través de una relación exponencial (Vásquez 1991). Sin embargo, es relevante entender la variación de esta relación a lo largo de la distribución de la especie, permitiendo una estimación más precisa de la biomasa acumulada en los bosques para cada localidad. 
-Uno de los efectos descritos a causa de la explotación de estas algas ha sido la disminución en la estructura de tallas de las poblaciones naturales, donde algas con discos más pequeños empiezan a dominar el bosque, en un proceso denominado juvenilización (Figueroa-Fabrega et al. 2017). La disminución de las tallas en las poblaciones modifica directamente la biomasa acumulada en las poblaciones naturales, por lo que sitios con mayor historia de explotación debieran reflejar una menor producción de biomasa. Esta biomasa también puede variar a escala de sitio en función de la abundancia de herbívoros, y la disminución de las tallas por efecto del barreteo, puede generar también una mayor susceptibilidad a la herbivoría disminuyendo asó la productividad poblacional. 
-En base a las hipótesis planteadas anteriormente, el presente trabajo tiene por objetivo hacer uso de diferentes bases de datos con información de la densidad, morfología y biomasa para determinar la variación de la biomasa acumulada (i.e standing stock) en diferentes poblaciones de L. trabeculata a lo largo de la costa de Chile como una primera aproximación a la estimación de la productividad en diferentes escalas temporales y espaciales. 
-
-Objetivos 
-1.	Determinar los parámetros de la relación entre la longitud del disco y el peso de L. trabeculata en diferentes localidades de la zona norte y centro de Chile y evaluar su variación respecto de estimaciones descritas anteriormente.
 2.	Estimar la variación de la biomasa acumulada en un gradiente latitudinal en diferentes escalas de tiempo (estacionales y anuales).
-3.	Relacionar la variación de la biomasa con variables ambientales (i.e. temperatura) estimadas a partir de imágenes satelitales en una escala temporal de 8 años para la localidad de Quintay.
-4.	Evaluar la relación entre la biomasa de algas con variables ecológicas como la abundancia de herbívoros.
-5.	Estimar los reservorios de carbono a partir de la biomasa acumulada en poblaciones naturales de L. trabeculata a partir de parámetros previamente descritos para la especie.
 
 ## Metodología
 
-
 ###Bases de datos
 
-A partir de diferentes bases de datos (Tabla 1) provenientes de proyectos Fondecyt y monitoreos realizados en áreas de manejo de recursos bentónicos (AMERB) se realizará una estimación de la biomasa acumulada en las poblaciones de Lessonia trabeculata, como un proxy de la productividad primaria de esta especie, para un total de 15 sitios, con información que fluctua desde el año 2012 al 2019.
+```{r 2012-2014}
+F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover, allometric, a,b, Biomass)) %>% mutate(DF= rep("F11110351", times= length(Site)), Stipes= rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
+F11110351$Site<-as.character(F11110351$Site)
+unique(F11110351$Site)
+
+##cambio de nombre a un sitio para std con otras bd
+
+F11110351$Site <- gsub("LosMolles", "Los Molles protected", F11110351$Site)
+
+
+```
+
+```{r 2015}
+
+F1140841<-read.csv("2015.csv") %>% filter(Subset == "kelp") %>% select(-c(Subset,Temperature, Visbility, Holdfast.Use,Blade.Use,Cover...,X,Biomass)) %>% mutate(DF= rep("F1140841", times= length(Site)), Length=rep("NA", times=length(Site))) %>% rename(Stipes= "no..stipes", Size= "Size.cm.", Station="station")
+unique(F1140841$Site)
+F1140841$Site <- gsub("Quintay", "QuintayAMERB", F1140841$Site)
+F1140841$Site <- gsub("El Franc\x8es", "TotoralilloOA", F1140841$Site)
+F1140841$Site <- gsub("Algarrobo", "AlgarroboOA", F1140841$Site)
+
+#Rellenar coordenadas
+
+cond1= (F1140841$Site== "AlgarroboOA")
+F1140841$Latitude[cond1] = "-33.36483661"
+F1140841$Longitude[cond1] = "-71.69101847"
+
+cond2= (F1140841$Site== "TotoralilloOA")
+F1140841$Latitude[cond2] = "-30.0939569"
+F1140841$Longitude[cond2] = "-71.37972619"
+
+cond3= (F1140841$Site== "QuintayAMERB")
+F1140841$Latitude[cond3] = "-33.19193931"
+F1140841$Longitude[cond3] = "-71.70033633"
+
+```
+
+
+
+```{r 2015-2016}
+F1151094<-read.csv("2015-2017.csv") %>% filter(Habitat == "kelp") %>% 
+  select(-c(Survey,Habitat,Sampler, High.1,High.2, Mean.High,comentario,Data_Entry,Num_parches)) %>%
+  mutate(DF=rep("F1151094", times= length(Site)),Season=rep("NA", times=length(Site)), Latitude=rep("NA", times=length(Site)), Longitude=rep("NA", times=length(Site)), Phase=rep("NA", times=length(Site))) %>% rename(Series ="serie",  Station= "Station.replicate", Replicate= "Pseudoreplicate",Size= "Width")
+
+#Cambio de nombre de los sitios
+F1151094$Site[F1151094$Site == "Quintay "] = "Quintay"
+F1151094$Site[F1151094$Site == "LosMolles"] = "Los Molles"
+F1151094$Site <- paste(F1151094$Site,F1151094$Exposure)
+unique(F1151094$Site)
+##Rellenamos las columnas de latitud y longitud
+
+
+condicion1= (F1151094$Site== "Quintay exposed")  
+condicion2= (F1151094$Site== "Quintay protected")
+condicion5= (F1151094$Site== "Quintay protected")
+condicion3= (F1151094$Site== "Los Molles exposed") 
+condicion4= (F1151094$Site== "Los Molles protected")
+
+#Completamos las coordenadas
+F1151094$Latitude[condicion1] = "-33.143806"
+F1151094$Longitude[condicion1]= "-71.711944"
+F1151094$Latitude[condicion2] = "-33.19193931"
+F1151094$Longitude[condicion2] = "-71.70033633"
+F1151094$Latitude[condicion3] = "-32.23857"
+F1151094$Longitude[condicion3] = "-71.52684"
+F1151094$Latitude[condicion4] = "-32.230642"
+F1151094$Longitude[condicion4] = "-71.523598"
+
+
+#Cada sitio tiene una zona profunda y en cada zona hay tres transectos, y debería ponerles 1, 2 , 3...4, 5, 6....
+
+condicion5=(F1151094$Zone =="shallow") & (F1151094$Transect =="1") 
+F1151094$Transect[condicion5] = "4"
+condicion6=(F1151094$Zone =="shallow") & (F1151094$Transect =="2") 
+F1151094$Transect[condicion6] = "5"
+condicion7=(F1151094$Zone =="shallow") & (F1151094$Transect =="3") 
+F1151094$Transect[condicion7] = "6"
+
+
+F1151094std= F1151094 %>% select(-c(Exposure,Zone)) %>% mutate(Season=rep("NA", times=length(Site)))
+F1151094std$Site <- gsub("Quintay protected", "QuintayAMERB", F1151094std$Site)
+
+```
+```{r Alldata, echo=F}
+
+#unir las 3 bases de datos y terminar de arreglar errores
+
+Alldata= rbind(F11110351,F1140841,F1151094std)
+Alldata$Size<-as.numeric(Alldata$Size)
+Alldata$Biomass= ((Alldata$Size^2.12927)*(5.29154))/1000
+Alldata$Latitude<-as.numeric(Alldata$Latitude)
+write.csv(Alldata, "Alldata.csv")
+```
+
+A partir de diferentes bases de datos (Tabla \@ref(tab:tabla)) provenientes de proyectos Fondecyt y de monitoreos realizados en áreas de manejo de recursos bentónicos (AMERB) se realizó una estimación de la biomasa acumulada en las poblaciones de ^Lessonia trabeculata^, como un proxy de la productividad primaria de esta especie, en un rango latitudinal desde los `r, min(Alldata$Latitude, na.rm = F) `ºS hasta `r, max(Alldata$Latitude, na.rm = F)` con información que fluctua desde el año 2012 al 2019.
+
+``````{r tabla}
+Tabla <- Alldata %>% group_by() %>% mutate(ClaseEdad= ifelse(Age > 18, "Adulto","Menor de edad")) %>% 
+  group_by(Sex,ClaseEdad) %>% summarise(n=n())
+kable(Tabla, caption="Pasajeros clasificados por sexo y edad") %>% kable_styling(bootstrap_options = c("striped","hover", "condensed"), full_width = F)
+
+
+```
+
 
 ###Metodologías de muestreo 
 
@@ -71,6 +165,9 @@ $$
   \end{aligned}
 $$ 
 Ya que los datos de no están bien balanceados entre los años, para estimar la variabilidad de biomasa a lo largo del gradiente latitudinal se realizará una comparación entre los 7 sitios disponibles en los años 2012 y 2013, y luego entre los 8 sitios para el año 2018.  Durante los años 2012 y 2013, las mediciones fueron realizadas estacionalmente, permitiendo una comparación estacional a través de las temporadas Otoño y Primavera de ambos años. Así mismo, la variación temporal anual será posible para la localidad de Quintay, donde existen mediciones desde el año 2012 al 2019. 
+
+
+
 ## Resultados
 
 ###Relación Talla-Peso
@@ -124,4 +221,5 @@ summary(model3)
 
 
 ## Discusión
+Recientemente, evaluaciones de la productividad para esta misma especie en la costa sur de Perú fueron descritas a partir de las poblaciones naturales con un promedio de 431 Kg de Carbono por hectarea, lo que permite una segunda comparación proveniente de una localidad cercana al extremo norte de su distribución (Aller-Rojas et al. 2020).
 ##Referencias
