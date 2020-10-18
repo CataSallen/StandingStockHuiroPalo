@@ -142,33 +142,12 @@ write.csv(Alldata, "Alldata.csv")
 
 A partir de diferentes bases de datos (Tabla \ref(tab:tabla)) provenientes de proyectos Fondecyt y de monitoreos realizados en áreas de manejo de recursos bentónicos (AMERB) se realizó una estimación de la biomasa acumulada en las poblaciones de ^Lessonia trabeculata^, como un proxy de la productividad primaria de esta especie, en un rango latitudinal desde los `r, min(Alldata$Latitude, na.rm = F) `ºS hasta `r, max(Alldata$Latitude, na.rm = F)` con información que fluctua desde el año 2012 al 2019.
 
-
-
-###Metodologías de muestreo 
-
-En todos los proyectos, información de la densidad y estructura de talla de L. trabeculata fue realizada mediante buceo autónomo en transectos equidistantes y perpendiculares a la línea de costa, que dependiendo del proyecto, varían en tamaño entre los 25, 50 o 100 m de largo y abarcan profundidades entre los 20 y 5 m. Las mediciones de la morfología de las algas fueron realizadas en cuadrantes de 1m2 en estaciones a lo largo del transecto. 
-Todas las bases de datos cuentan con información del diámetro máximo del disco (D) y abundancia de algas por cuadrante. Algunas cuentan con información adicional de la morfología, como el número de estipes (E) y largo total (LT), y en otros casos, también se cuenta con la abundancia de herbívoros por cuadrante. 
-En el caso de los estudios realizados en las AMERB, el peso de las algas fue medido extrayendo 30 individuos desde el disco de adhesión de manera aleatoria abarcando todas las tallas (juveniles y adultos), donde se midió además las variables morfológicas (i.e. D, E, LT). La presencia/ausencia de tejido reproductivo en las láminas fue también registrada. La relación entre la biomasa (Kg) y el tamaño del disco (cm) en cada localidad (objetivo 1) será calculada en 6 sitios para el año 2018. Posteriormente estos parámetros serán comparados con aquellos descritos previamente para la especie (Vásquez 1991).
-A partir de los parámetros obtenidos en cada localidad, la biomasa almacenada en los bosques de L. trabeculata será estimada a partir de las mediciones del tamaño del disco realizadas en los cuadrantes a partir a partir de la ecuación (Vásquez 1991):
-$$
-  \begin{aligned}
-  B = aL^b 
-  \end{aligned}
-$$ 
-Ya que los datos de no están bien balanceados entre los años, para estimar la variabilidad de biomasa a lo largo del gradiente latitudinal se realizará una comparación entre los 7 sitios disponibles en los años 2012 y 2013, y luego entre los 8 sitios para el año 2018.  Durante los años 2012 y 2013, las mediciones fueron realizadas estacionalmente, permitiendo una comparación estacional a través de las temporadas Otoño y Primavera de ambos años. Así mismo, la variación temporal anual será posible para la localidad de Quintay, donde existen mediciones desde el año 2012 al 2019. 
-
-
-
-## Resultados
-
-###Relación Talla-Peso
-
-La relación entre el diametro máximo del disco y el peso de ^L. trabeculata^ en diferentes localidades se observó como una función exponencial, que al ser transformada a logaritmo, pudo ser ajustada a una relación lineal (Figura \@ref(fig:plotPeso)). El modelo lineal generalizado entrega una 
-
-```{r}
+```{r bdPeso, echo=FALSE}
 Peso<-read.csv("pesoalgasIFOP.csv") %>% filter(Especie == "Lessonia trabeculata") %>% mutate(logPeso= log(peso), logDisco= log(Diametro.extraida)) %>% mutate(Latitude =rep("", times=length(AMERB), Longitud= rep("", times= length(AMERB))))
 Peso$AMERB <- gsub("Quintay sector B", "Quintay protected", Peso$AMERB)
 Peso$AMERB <- gsub("Quintay sector A", "Quintay protected", Peso$AMERB)
+Peso$AMERB<-as.factor(Peso$AMERB)
+
 
 
 conQ= (Peso$AMERB== "Quintay protected")
@@ -200,6 +179,32 @@ Peso$Longitude[conPY] = "-70.600943"
 
 ```
 
+Para poder estimar la biomasa, se utilizaron datos de algas extraídas en `r, length(levels(Peso$AMERB))`
+
+
+###Metodologías de muestreo 
+
+En todos los proyectos, información de la densidad y estructura de talla de L. trabeculata fue realizada mediante buceo autónomo en transectos equidistantes y perpendiculares a la línea de costa, que dependiendo del proyecto, varían en tamaño entre los 25, 50 o 100 m de largo y abarcan profundidades entre los 20 y 5 m. Las mediciones de la morfología de las algas fueron realizadas en cuadrantes de 1m2 en estaciones a lo largo del transecto. 
+Todas las bases de datos cuentan con información del diámetro máximo del disco (D) y abundancia de algas por cuadrante. Algunas cuentan con información adicional de la morfología, como el número de estipes (E) y largo total (LT), y en otros casos, también se cuenta con la abundancia de herbívoros por cuadrante. 
+En el caso de los estudios realizados en las AMERB, el peso de las algas fue medido extrayendo 30 individuos desde el disco de adhesión de manera aleatoria abarcando todas las tallas (juveniles y adultos), donde se midió además las variables morfológicas (i.e. D, E, LT). La presencia/ausencia de tejido reproductivo en las láminas fue también registrada. La relación entre la biomasa (Kg) y el tamaño del disco (cm) en cada localidad (objetivo 1) será calculada en 6 sitios para el año 2018. Posteriormente estos parámetros serán comparados con aquellos descritos previamente para la especie (Vásquez 1991).
+A partir de los parámetros obtenidos en cada localidad, la biomasa almacenada en los bosques de L. trabeculata será estimada a partir de las mediciones del tamaño del disco realizadas en los cuadrantes a partir a partir de la ecuación (Vásquez 1991):
+$$
+  \begin{aligned}
+  B = aL^b 
+  \end{aligned}
+$$ 
+Ya que los datos de no están bien balanceados entre los años, para estimar la variabilidad de biomasa a lo largo del gradiente latitudinal se realizará una comparación entre los 7 sitios disponibles en los años 2012 y 2013, y luego entre los 8 sitios para el año 2018.  Durante los años 2012 y 2013, las mediciones fueron realizadas estacionalmente, permitiendo una comparación estacional a través de las temporadas Otoño y Primavera de ambos años. Así mismo, la variación temporal anual será posible para la localidad de Quintay, donde existen mediciones desde el año 2012 al 2019. 
+
+
+
+## Resultados
+
+###Relación Talla-Peso
+
+La relación entre el diametro máximo del disco y el peso de ^L. trabeculata^ en diferentes localidades presenta una relación exponencial, que al ser transformada a logaritmo, pudo ser ajustada como una relación lineal (Figura \@ref(fig:plotPeso)). A partir de 
+
+
+
 ```{r plotPeso, echo=F, fig.cap="Relación entre el logaritmo del Diametro del Disco (cm) y el logaritmo del Peso (g) de ^Lessonia trabeculata^"}
 ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_point(aes(color=Latitude))
 ```
@@ -208,8 +213,10 @@ ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_point(aes(color=
 
 model3<-glm(peso~I(log(Diametro.extraida))+AMERB, family = quasipoisson, data=Peso)
 summary(model3)
+tidy(model3)
 ```
 
+##
 
 ## Discusión
 Recientemente, evaluaciones de la productividad para esta misma especie en la costa sur de Perú fueron descritas a partir de las poblaciones naturales con un promedio de 431 Kg de Carbono por hectarea, lo que permite una segunda comparación proveniente de una localidad cercana al extremo norte de su distribución (Aller-Rojas et al. 2020).
