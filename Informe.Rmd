@@ -6,7 +6,7 @@ output:
   bookdown::pdf_document2:
     fig.caption: yes
     toc: no
-bibliography: Biblio.bib
+bibliography: biblio.bib
 ---
 
 ```{r setup, include=FALSE}
