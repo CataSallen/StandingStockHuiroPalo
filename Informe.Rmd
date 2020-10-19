@@ -23,21 +23,21 @@ library(MuMIn)
 
 ## Introducción
 
-  La fotosíntesis es el proceso evolutivo que ha permitido uno de los principales cambios para hacer la tierra habitable a través de la captura del carbono inorgánico presente en la atmósfera y posterior liberación de oxígeno (@martin2007eukaryote). Las macroalgas, aunque subestimadas por su rol como sumideros de carbono, aportan hasta un 10% de la productividad primaria neta mundial [@krause2016substantial]. De este porcentaje, un 40% de la producción total representa un excedente de crecimiento, el cual es utilizado por herbívoros, filtradores y suspensívoros, siendo la base de las cadenas tróficas y sustentando una diversidad de especies y pesquerías en las zonas costeras [@duarte2013role;@duarte2017reviews]. Otro destino de la productividad son los reservorios marinos donde se ha descrito que hasta 14 Tg C año−1 de C orgánico proveniente de las macroalgas es almacenado en los sedimentos y 153 Tg C año−1 son trasladas hacia zonas profundas del océano, similar al aporte de generado por pastos marinos, marismas y manglares [dierssen2009potential; @krause2016substantial]. Así, la importancia de las macroalgas, junto con estos otros ecosistemas costeros, han cobrado mayor relevancia en las estrategias de carbono azul, que buscan la conservación y restauración de estos hábitats, por su rol en la disminución de gases de efecto invernadero y la mitigación de los efectos del cambio climático [@duarte2013role;@macreadie2019future].
+  La fotosíntesis es el proceso evolutivo que ha permitido uno de los principales cambios para hacer la tierra habitable a través de la captura del carbono inorgánico presente en la atmósfera y posterior liberación de oxígeno [@martin2007eukaryote]. Las macroalgas, aunque subestimadas por su rol como sumideros de carbono, aportan hasta un 10% de la productividad primaria neta mundial [@krause2016substantial]. De este porcentaje, un 40% de la producción total representa un excedente de crecimiento, el cual es utilizado por herbívoros, filtradores y suspensívoros, siendo la base de las cadenas tróficas y sustentando una diversidad de especies y pesquerías en las zonas costeras [@duarte2013role;@duarte2017reviews]. Otro destino de la productividad son los reservorios marinos donde se ha descrito que hasta 14 Tg C año−1 de C orgánico proveniente de las macroalgas es almacenado en los sedimentos y 153 Tg C año−1 son trasladas hacia zonas profundas del océano, similar al aporte de generado por pastos marinos, marismas y manglares [@dierssen2009potential; @krause2016substantial]. Así, la importancia de las macroalgas, junto con estos otros ecosistemas costeros, han cobrado mayor relevancia en las estrategias de carbono azul, que buscan la conservación y restauración de estos hábitats, por su rol en la disminución de gases de efecto invernadero y la mitigación de los efectos del cambio climático [@duarte2013role;@macreadie2019future].
 
 
-  Las macroalgas pardas dominan un 26% de las costas del mundo y debido a su gran biomasa forman parte de los ecosistemas más productivos en zonas costeras frías y templadas, con importantes funciones ecológicas y servicios ecosistémicos [@wernberg2019status; @macreadie2019future;filbee2020substantial]. Este grupo de algas, pertenecientes al orden Laminariales, presentan una gran diversidad morfológica y estrategias de vida (perennes/anuales), lo que va a determinar en parte, las diferencias en las tasas de producción a lo largo de las regiones donde se distribuyen y entre especies [@steneck2002kelp]. Su productividad puede alcanzar valores similares a los producidos por bosques lluviosos tropicales, que alcanzan en promedio 2200 g de peso seco m-2 año-1 [@krumhansl2016global; @wernberg2019status]. Sin embargo, las estimaciones de productividad primaria (NPP), que representa una medición de la producción de materia orgánica (o gramos de carbono) por unidad de área y tiempo [@falkowski2007introduction], puede revelar diferentes procesos subyacentes que implican producción de biomasa (i.e. crecimiento, reclutamiento, fotosíntesis, acumulación y pérdida de biomasa, etc,  [@reed2008biomass] dependiendo de la metodología utilizada para estimar la NPP. 
+  Las macroalgas pardas dominan un 26% de las costas del mundo y debido a su gran biomasa forman parte de los ecosistemas más productivos en zonas costeras frías y templadas, con importantes funciones ecológicas y servicios ecosistémicos [@wernberg2019status; @macreadie2019future;@filbee2020substantial]. Este grupo de algas, pertenecientes al orden Laminariales, presentan una gran diversidad morfológica y estrategias de vida (perennes/anuales), lo que va a determinar en parte, las diferencias en las tasas de producción a lo largo de las regiones donde se distribuyen y entre especies [@steneck2002kelp]. Su productividad puede alcanzar valores similares a los producidos por bosques lluviosos tropicales, que alcanzan en promedio 2200 g de peso seco m-2 año-1 [@krumhansl2016global; @wernberg2019status]. Sin embargo, las estimaciones de productividad primaria (NPP), que representa una medición de la producción de materia orgánica (o gramos de carbono) por unidad de área y tiempo [@falkowski2007introduction], puede revelar diferentes procesos subyacentes que implican producción de biomasa (i.e. crecimiento, reclutamiento, fotosíntesis, acumulación y pérdida de biomasa, etc,  [@reed2008biomass] dependiendo de la metodología utilizada para estimar la NPP. 
 
 
-  Entre los principales factores ambientales que moduladan la productividad se encuentran la luz, la temperatura y los nutrientes [@edding2006fotosintesis; @smale2020environmental;@wernberg2019status]. La luz tiene control directo sobre la fotosíntesis y el crecimiento, y esta varía durante las estaciones controlando los patrones de crecimiento anuales de las macroalgas pardas [tala2005growth; @wernberg2019status; @reed2008biomass]. Junto con la luz, la disponibilidad de nutrientes, principalmente el nitrógeno, también afectan el crecimiento, pero algunas especies de macroalgas pardas presentan estrategias de crecimiento, el cual es realizado durante las temporadas de mayor disponibilidad de nutrientes, y utilizando las reservas energéticas producidas en períodos de alta irradiación, cuando la fotosíntesis es máxima [@tala2005growth; @edding2006fotosintesis]. Finalmente, la temperatura es uno los factores más importantes descritos que determinan la productividad primaria, considerándose el calentamiento global como una de las más grandes amenazas que están enfrentando los bosques de macroalgas pardas a nivel global [bearham2013temperature; @smale2020environmental]. Así, la interacción entre estos factores ambientales, y su variación en el tiempo pueden modular los patrones de producción de las poblaciones de macroalgas pardas [@graham45global].
+  Entre los principales factores ambientales que moduladan la productividad se encuentran la luz, la temperatura y los nutrientes [@edding2006fotosintesis; @smale2020environmental;@wernberg2019status]. La luz tiene control directo sobre la fotosíntesis y el crecimiento, y esta varía durante las estaciones controlando los patrones de crecimiento anuales de las macroalgas pardas [@tala2005growth; @wernberg2019status; @reed2008biomass]. Junto con la luz, la disponibilidad de nutrientes, principalmente el nitrógeno, también afectan el crecimiento, pero algunas especies de macroalgas pardas presentan estrategias de crecimiento, el cual es realizado durante las temporadas de mayor disponibilidad de nutrientes, y utilizando las reservas energéticas producidas en períodos de alta irradiación, cuando la fotosíntesis es máxima [@tala2005growth; @edding2006fotosintesis]. Finalmente, la temperatura es uno los factores más importantes descritos que determinan la productividad primaria, considerándose el calentamiento global como una de las más grandes amenazas que están enfrentando los bosques de macroalgas pardas a nivel global [@bearham2013temperature; @smale2020environmental]. Así, la interacción entre estos factores ambientales, y su variación en el tiempo pueden modular los patrones de producción de las poblaciones de macroalgas pardas [@graham45global].
 
   En Chile, los fondos submareales rocosos están dominador por Lessonia trabeculata  [@villouta1986lessonia], quien presenta una distribución desde los 18º hasta los 40ºS, y alcanza profundidades de hasta 40 m (thiel2007humboldt). Aunque tiene características perennes, la dinámica de sus poblaciones se ha visto estar ampliamente determinada por los factores ambientales y ecológicos de mesoescala (10-100s km) [@vega2005population; @perez2017exploring]. A lo largo de su distribución, las poblaciones de ^L. trabeculata^ son favorecidas por procesos de surgencia asociados a la corriente de Humboldt, que aumentan la resiliencia de las poblaciones frente a Eventos de Oscilación del sur El Niño (ENSO), ya que estas condiciones proven una mayor estabilidad térmica y aporte de nutrientes [@vega2005population]. Sin embargo, las poblaciones de ^L. trabeculata^ han disminuido principalmente debido a la explotación de estas algas, debido a que la pesquería desde el año 2002 incrementó progresivamente a lo largo de la costa norte de Chile, por lo que algunas regulaciones mediante cuotas y vedas controlan la pesquería [@vasquez2014economic]. Actualmente la extracción se ha expandido hacia la zona sur del país, sin ningún tipo de restricción, excepto la que rige sobre las áreas de manejo y recursos bentónicos (AMERB), y muy pocos estudios han logrado entender el efecto sobre las comunidades asociadas a estas macroalgas. Bajo el contexto de explotación de ^L. trabeculata^ y la variación en las condiciones ambientales por causa del cambio climático, se hace relevante realizar estimaciones sobre los procesos ecosistémicos que estas algas proveen, como lo es la productividad primaria [@pettorelli2018satellite]
   
   ^Lessonia trabeculata^, al igual que otras macroalgas, se ha descrito por tener una estrategia de anticipación a la temporada y presenta un periodo de mayor crecimiento durante los meses de octubre y noviembre con una producción de 0.04 g d-1 de peso seco diario [@tala2007first]. Este crecimiento ocurre en el tejido meristemático ubicado entre la base de las láminas y el estipe, y a medida que las láminas crecen, el tejido se pierde en la zona apical, tejido que es traspasado a la producción secundaria o hacia la columna de agua como material particulado [@tala2005growth;@tala2007first;@edding2006fotosintesis]. Hasta 11 g de peso seco m^2 d^1 (2.46 gC m^2 d^1, [@tala2007first]) es producido por esta especie, y junto con ^L. spicata^ presentan valores altamente superiores al compararlas con otras macroalgas pardas [@krumhansl2012production]. Sin embargo, esta estimación corresponde a una población específica en la zona norte de Chile, específicamente en la localidad de Tongoy (30º15’S–71º15’W) [@tala2007first], y no existen otras estimaciones de la productividad de L. trabeculata a lo largo de la costa de Chile.
   
-  Tanto las mediciones directas de la biomasa a intervalos de tiempo y área (i.e. Standing stock), como las mediciones del crecimiento, han sido considerados como buenos proxys de la productividad (@edding2006fotosintesis), y la información de la densidad, morfología y tallas de ^L. trabeculata^ son útiles para realizar estas estimaciones a partir de poblaciones naturales a lo largo de su distribución. Para poder extrapolar la información de biomasa a partir de las tallas del disco, los parámetros para la especie han sido descritos a través de una relación exponencial [@vasquez1991variables]. Sin embargo, es relevante entender que las formas de crecimiento en esta especie varían según las condiciones locales (i.e exposición, herbivoría, entre otros) y por lo tanto esta relación puede variar a lo largo de su distribución.
+  Tanto las mediciones directas de la biomasa a intervalos de tiempo y área (i.e. Standing stock), como las mediciones del crecimiento, han sido considerados como buenos proxys de la productividad [@edding2006fotosintesis], y la información de la densidad, morfología y tallas de ^L. trabeculata^ son útiles para realizar estas estimaciones a partir de poblaciones naturales a lo largo de su distribución. Para poder extrapolar la información de biomasa, la tallas del disco se ha descrito por ser un buen predictor del peso, presentando una relación exponencial [@vasquez1991variables]. Sin embargo, es relevante entender que las formas de crecimiento en esta especie varían según las condiciones locales (i.e exposición, herbivoría, entre otros) y por lo tanto esta relación puede variar dependiendo del sitio.
 
-   Al igual como se ha observado en otras especies de macroalgas pardas se espera que la productividad varíe a lo largo de un gradiente latitudinal debido al cambio en las condiciones ambientales (i.e. temperatura). En un contexto temporal, se sabe que los patrones de crecimiento están ampliamente determinados por las condiciones ambientales a lo largo de las estaciones del año [@tala2007first; @smale2020environmental]. Sin embargo, la variación en la biomasa acumulada para especies perennes como ^L. trabeculata^, debería permanecer estable a lo largo del año independiente de la localidad, a menos que la población sea explotada. Uno de los efectos descritos a causa de la explotación de estas algas ha sido la disminución en la estructura de tallas de las poblaciones naturales, donde algas con discos más pequeños empiezan a dominar el bosque, en un proceso denominado juvenilización [@figueroarevista]∫. La disminución de las tallas en las poblaciones, se verá reflejada directamente en la biomasa acumulada en las poblaciones naturales, por lo que sitios con mayor historia de explotación debieran reflejar una menor producción de biomasa. 
+   Al igual como se ha observado en otras especies de macroalgas pardas se espera que la productividad varíe a lo largo de un gradiente latitudinal debido al cambio en las condiciones ambientales (i.e. temperatura). En un contexto temporal, se sabe que los patrones de crecimiento están ampliamente determinados por las condiciones ambientales a lo largo de las estaciones del año [@tala2007first; @smale2020environmental]. Sin embargo, la variación en la biomasa acumulada para especies perennes como ^L. trabeculata^, debería permanecer estable a lo largo del año independiente de la localidad, a menos que la población sea explotada. Uno de los efectos descritos a causa de la explotación de estas algas ha sido la disminución en la estructura de tallas de las poblaciones naturales, donde algas con discos más pequeños empiezan a dominar el bosque, en un proceso denominado juvenilización [@figueroarevista]. La disminución de las tallas en las poblaciones, se verá reflejada directamente en la biomasa acumulada en las poblaciones naturales, por lo que sitios con mayor historia de explotación debieran reflejar una menor producción de biomasa. 
 
 ## Objetivos 
 
@@ -46,9 +46,6 @@ library(MuMIn)
 2.	Estimar la variación de la biomasa acumulada en un gradiente latitudinal en diferentes escalas de tiempo (estacionales y anuales).
 
 ## Metodología
-
-###Bases de datos
-
 ```{r 2012-2014}
 F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover, allometric, a,b, Biomass)) %>% mutate(DF= rep("F11110351", times= length(Site)), Stipes= rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
 F11110351$Site<-as.character(F11110351$Site)
@@ -60,7 +57,6 @@ F11110351$Site <- gsub("LosMolles", "Los Molles protected", F11110351$Site)
 
 
 ```
-
 ```{r 2015}
 
 F1140841<-read.csv("2015.csv") %>% filter(Subset == "kelp") %>% select(-c(Subset,Temperature, Visbility, Holdfast.Use,Blade.Use,Cover...,X,Biomass)) %>% mutate(DF= rep("F1140841", times= length(Site)), Length=rep("NA", times=length(Site))) %>% rename(Stipes= "no..stipes", Size= "Size.cm.", Station="station")
@@ -84,7 +80,6 @@ F1140841$Latitude[cond3] = "-33.19193931"
 F1140841$Longitude[cond3] = "-71.70033633"
 
 ```
-
 ```{r 2015-2016}
 F1151094<-read.csv("2015-2017.csv") %>% filter(Habitat == "kelp") %>% 
   select(-c(Survey,Habitat,Sampler, High.1,High.2, Mean.High,comentario,Data_Entry,Num_parches)) %>%
@@ -135,6 +130,7 @@ F1151094std$Site <- gsub("Quintay protected", "QuintayAMERB", F1151094std$Site)
 
 Alldata= rbind(F11110351,F1140841,F1151094std)
 Alldata$Size<-as.numeric(Alldata$Size)
+Alldata$Site<-as.factor(Alldata$Site)
 Alldata$Biomass= ((Alldata$Size^2.12927)*(5.29154))/1000
 Alldata$Latitude<-as.numeric(Alldata$Latitude)
 write.csv(Alldata, "Alldata.csv")
@@ -142,12 +138,15 @@ write.csv(Alldata, "Alldata.csv")
 
 A partir de diferentes bases de datos (Tabla \ref(tab:tabla)) provenientes de proyectos Fondecyt y de monitoreos realizados en áreas de manejo de recursos bentónicos (AMERB) se realizó una estimación de la biomasa acumulada en las poblaciones de ^Lessonia trabeculata^, como un proxy de la productividad primaria de esta especie, en un rango latitudinal desde los `r, min(Alldata$Latitude, na.rm = F) `ºS hasta `r, max(Alldata$Latitude, na.rm = F)` con información que fluctua desde el año 2012 al 2019.
 
+En las diferentes bases de datos, información de la densidad y estructura de talla de ^L. trabeculata^ fue realizada mediante buceo autónomo en transectos equidistantes y perpendiculares a la línea de costa, los cuales varían en longitud dependiendo del proyecto (i.e 25, 50 o 100 m) y abarcan profundidades entre los 20 y 5 m. Las mediciones de la morfología de las algas fueron realizadas en cuadrantes de 1m^2 en estaciones (cada 5 o 10 m) a lo largo del transecto. Todas las bases de datos cuentan con información del diámetro máximo del disco (D) y abundancia de algas por cuadrante, y en algunos casos se cuentan con mayor detalle la morfología, agregandose el número de estipes (E) y largo total (LT).
+```{r tabla, echo=F}
+
+```
 ```{r bdPeso, echo=FALSE}
 Peso<-read.csv("pesoalgasIFOP.csv") %>% filter(Especie == "Lessonia trabeculata") %>% mutate(logPeso= log(peso), logDisco= log(Diametro.extraida)) %>% mutate(Latitude =rep("", times=length(AMERB), Longitud= rep("", times= length(AMERB))))
 Peso$AMERB <- gsub("Quintay sector B", "Quintay protected", Peso$AMERB)
 Peso$AMERB <- gsub("Quintay sector A", "Quintay protected", Peso$AMERB)
 Peso$AMERB<-as.factor(Peso$AMERB)
-
 
 
 conQ= (Peso$AMERB== "Quintay protected")
@@ -179,41 +178,39 @@ Peso$Longitude[conPY] = "-70.600943"
 
 ```
 
-Para poder estimar la biomasa, se utilizaron datos de algas extraídas en `r, length(levels(Peso$AMERB))`
-
-
-###Metodologías de muestreo 
-
-En todos los proyectos, información de la densidad y estructura de talla de L. trabeculata fue realizada mediante buceo autónomo en transectos equidistantes y perpendiculares a la línea de costa, que dependiendo del proyecto, varían en tamaño entre los 25, 50 o 100 m de largo y abarcan profundidades entre los 20 y 5 m. Las mediciones de la morfología de las algas fueron realizadas en cuadrantes de 1m2 en estaciones a lo largo del transecto. 
-Todas las bases de datos cuentan con información del diámetro máximo del disco (D) y abundancia de algas por cuadrante. Algunas cuentan con información adicional de la morfología, como el número de estipes (E) y largo total (LT), y en otros casos, también se cuenta con la abundancia de herbívoros por cuadrante. 
-En el caso de los estudios realizados en las AMERB, el peso de las algas fue medido extrayendo 30 individuos desde el disco de adhesión de manera aleatoria abarcando todas las tallas (juveniles y adultos), donde se midió además las variables morfológicas (i.e. D, E, LT). La presencia/ausencia de tejido reproductivo en las láminas fue también registrada. La relación entre la biomasa (Kg) y el tamaño del disco (cm) en cada localidad (objetivo 1) será calculada en 6 sitios para el año 2018. Posteriormente estos parámetros serán comparados con aquellos descritos previamente para la especie (Vásquez 1991).
-A partir de los parámetros obtenidos en cada localidad, la biomasa almacenada en los bosques de L. trabeculata será estimada a partir de las mediciones del tamaño del disco realizadas en los cuadrantes a partir a partir de la ecuación (Vásquez 1991):
+Para calcular la biomasa a partir de la talla de los discos de L. trabeculata se utilizó la ecuación 
 $$
   \begin{aligned}
   B = aL^b 
   \end{aligned}
 $$ 
-Ya que los datos de no están bien balanceados entre los años, para estimar la variabilidad de biomasa a lo largo del gradiente latitudinal se realizará una comparación entre los 7 sitios disponibles en los años 2012 y 2013, y luego entre los 8 sitios para el año 2018.  Durante los años 2012 y 2013, las mediciones fueron realizadas estacionalmente, permitiendo una comparación estacional a través de las temporadas Otoño y Primavera de ambos años. Así mismo, la variación temporal anual será posible para la localidad de Quintay, donde existen mediciones desde el año 2012 al 2019. 
+donde L, corresponde al diámetro del disco y, a y b son constantes de la relación entre el diámetro del disco y el peso. 
+Para determinar si esta la relación varía entre sitios, se utilizó una base de datos de `r, length(levels(Peso$AMERB))` sitios entre los `r, min(Peso$Latitude, na.rm = F) `ºS y los `r, max(Peso$Latitude, na.rm = F)`ºW. En cada sitio, 30 algas fueron extraídas desde el disco de adhesión obteniendo el alga completa y variables morfológicas, como el diámetro del disco (L), el número de estipes (E), y el largo total (LT) fueron medidos. Las diferencias entre sitios y los parametros de la relación fueron estimados mediante un análisis linear generalizado (GLM), y el intercepto y la pendiente correspondieron a los parametros a y b de la ecuación de biomasa, respectivamente. 
 
-
+Para determinar como varía la biomasa de los bosques de ^L. trabeculata^ a lo largo del gradiente latitudinal y temporal, se utilizaron sólo las bases de datos de los años 2012 y 2013. Durante estos años, un total de  `r, Alldata %>% filter(DF=="F11110351", Season !="Summer 2014") %>% summarise(length(levels(Site)))` sitios entre los `r, min(Transect$Latitude, na.rm = F) `ºS y los `r, max(Transect$Latitude, na.rm = F)`ºW fueron monitoreados en las temporadas de otoño y primavera. A partir de esta información, diferentes modelos lineales generalizados (GLM) fueron utilizados para entender los factores que estarían determinando la variación en biomasa.
 
 ## Resultados
 
 ###Relación Talla-Peso
 
-La relación entre el diametro máximo del disco y el peso de ^L. trabeculata^ en diferentes localidades presenta una relación exponencial, que al ser transformada a logaritmo, pudo ser ajustada como una relación lineal (Figura \@ref(fig:plotPeso)). A partir de 
+La relación entre el diametro máximo del disco y el peso de ^L. trabeculata^ en diferentes localidades presenta una relación exponencial, que al ser transformada a logaritmo, pudo ser ajustada como una relación lineal (Figura \@ref(fig:plotPeso)). La biomasa varío de manera significativa entre sitios
 
 
 
 ```{r plotPeso, echo=F, fig.cap="Relación entre el logaritmo del Diametro del Disco (cm) y el logaritmo del Peso (g) de ^Lessonia trabeculata^"}
-ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_point(aes(color=Latitude))
+
+ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_jitter(aes(color=Latitude))+ theme_bw()
+
 ```
 
 ```{r GLM, echo=FALSE, fig.cap="Resultados del modelo lineal generalizado (GLM) evaluando la relación entre el peso y la talla de Lessonia trabeculata por sitio"}
 
 model3<-glm(peso~I(log(Diametro.extraida))+AMERB, family = quasipoisson, data=Peso)
 summary(model3)
-tidy(model3)
+glance(model3)
+anova(model3, test = "F")
+
+
 ```
 
 ##
