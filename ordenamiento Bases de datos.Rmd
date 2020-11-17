@@ -8,190 +8,192 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F, warning=FALSE, error = F, message = F)
 library(tidyverse) #metalibrary para ordenar 
-library(knitr) 
+library(knitr)
+library(gridExtra)
 library(kableExtra)
 library(stringr)
+library(broom)
+library(MuMIn)
 ```
 
-## Ordenamiento de bases de datos
-###2012-1014
-Primera base de datos proviene de un proyecto fondecytF11110351, y tiene información obtenida en terreno de las temporadas de otoño y primavera para los años 2012-2013 y para la temporada de verano del 2014.
+## Relación Talla-Peso 
 
-En este muestreo se realizaron 2 transectos de 100 m en cada localidad, y se evaluó la abundancia y diámetro del disco de las macroalgas en cuadrantes de 1m2 a cada lado del transecto en estaciones cada 10 m.
-
-```{r 2012-2014}
-F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover)) %>% mutate(DF= rep("F11110351", times= length(Site)), Stipes= rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
-
-Georef1214<-F11110351 %>% group_by(Site,Season, Date) %>% summarise(Latitud= unique(Latitude), Longitude=unique(Longitude)) %>% arrange(Season)
-
-write.csv(Georef1214, "Georef1214.csv")
-
-```
-
-
-```{r, eval=FALSE}
-#Para evaluar si las bd tienen los mismos nombres de las columnas 
-colnames(F11110351)
-print("----------")
-colnames(F1140841)
-print("----------")
-colnames(F1151094)
-print("----------")
-#colnames(ifop18)
-#print("----------")
-#colnames(ifop19)
-
-colnames(F11110351)== colnames(F1140841)
-```
-
-La segunda base de datos proviene de otro proyecto fondecyt F1140841 donde se realizó un sólo muestreo, por lo que sólo se tiene información para la temporada de verano 2015, donde se realizaron transectos de 50 m, y se medió la abundancia de algas, diámetro del disco, y algunas otras variables morfológicas, en cuadrantes de 1m2 a cada lado del transecto en estaciones cada 10 m.
-
-```{r 2015}
-
-F1140841<-read.csv("2015.csv") %>% filter(Subset == "kelp") %>% select(-c(Subset,Temperature, Visbility, Holdfast.Use,Blade.Use,Cover...,X)) %>% mutate(DF= rep("F1140841", times= length(Site)),  a=rep("NA", times=length(Site)), b=rep("NA", times=length(Site)),allometric=rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
-
-
-```
-colnames(F1140841) "station" debería ser "Station", col "Size.cm" debería ser "Size", col "no..stipes" debería ser "Stipes".
-
-La tercera base de datos es un proyecto fondecyt 1151094 donde se realizaron muestreos en transectos de 25 m en zonas profundas y zonas someras. Habría que hacer un promedio de los 6 transectos. Y se realizaron cuadrantes, a cada lado del transecto, no en todos los casos.
-
-```{r 2015-2016}
-F1151094<-read.csv("2015-2017.csv") %>% filter(Habitat == "kelp") %>% 
-  select(-c(Survey,Habitat,Sampler, High.1,High.2, Mean.High,comentario,Data_Entry,Num_parches)) %>%
-  mutate(DF=rep("F1151094", times= length(Site)),Season=rep("NA", times=length(Site)),Latitude=rep("NA", times=length(Site)), Longitude=rep("NA", times=length(Site)), a=rep("NA", times=length(Site)), b=rep("NA", times=length(Site)),allometric=rep("NA", times=length(Site)), Phase=rep("NA", times=length(Site)), Biomass=rep("NA", times=length(Site))) %>% rename(Serie ="serie",  Station= "Station.replicate", Replicate= "Pseudoreplicate",Size= "Width")
-
-##CAMBIAR NOMBRE A LA COLUMNA
-#rename(Casos_activos = "Casos activos")
-```
-
-En colnames(F1151094) "serie" esta escrito con minúscula, "Station.replicate" debería ser "Station","Pseudoreplicate" debería ser "Replicate", "Width" debería ser "Size". 
-Exposure me indica la localidad dentro del sitio, por lo que debemos asignar:
-Quintay expuesto:-33.143806, -71.711944
-Quintay protegido:-33.1919	-71.701485
-Los Molles expuesto:-32.23857	-71.52684
-Los Molles protegido:-32.230642, -71.523598	
-
-Cada sitio tiene una zona profunda y en cada zona hay tres transectos, y debería ponerles 1, 2 , 3...4, 5, 6....
-
-```{r}
-  
-table(F1151094$Exposure) ##table util para contar cuantas categorias dentro de factor tienes.
-F1151094$Site[F1151094$Site == "Quintay "] = "Quintay"
-condicion1= (F1151094$Site== "Quintay") & (F1151094$Exposure =="exposed")
-condicion2= (F1151094$Site== "Quintay") & (F1151094$Exposure =="protected")
-condicion3= (F1151094$Site== "Los Molles") & (F1151094$Exposure =="exposed")
-condicion4= (F1151094$Site== "Los Molles") & (F1151094$Exposure =="protected")
-
-
-F1151094$latitude[condicion1] = "-33.143806"
-F1151094$longitude[condicion1]= "-71.711944"
-F1151094$latitude[condicion2] = "-33.1919"
-F1151094$longitude[condicion2] = "-71.701485"
-F1151094$latitude[condicion3] = "-32.23857"
-F1151094$longitude[condicion3] = "-71.52684"
-F1151094$latitude[condicion4] = "-32.230642"
-F1151094$longitude[condicion4] = "-71.523598"
-
-
-```
-
-Cada sitio tiene una zona profunda y en cada zona hay tres transectos, y debería ponerles 1, 2 , 3...4, 5, 6....
-Finalmente también hay que agregar Season, dependiendo de la fecha ... 
-10-11-15 11-11-15 -> Primavera 2015
-05-04-16 13-04-16 -> Otoño 2016
-29-08-17 30-08-17 31-08-17-> Invierno 2017
-16-12-16 ->verano 2017
-
-```{r}
-condicion5=(F1151094$Zone =="shallow") & (F1151094$Transect =="1") 
-F1151094$Transect[condicion5] = "4"
-condicion6=(F1151094$Zone =="shallow") & (F1151094$Transect =="2") 
-F1151094$Transect[condicion6] = "5"
-condicion7=(F1151094$Zone =="shallow") & (F1151094$Transect =="3") 
-F1151094$Transect[condicion7] = "6"
-
-
-F1151094std= F1151094 %>% select(-c(Exposure,Zone)) %>% mutate(Season=rep("NA", times=length(Site)))
-
-```
-
-
-Vamos a unir estas 3 bases de datos
-
-```{r}
-Alldata= rbind(F11110351,F1140841,F1151094std) %>% group_by(Site,Season, Date)
-unique(Alldata$Site)
-```
-Necesito estandarizar los nombre de los sitios en esta planilla 
-
-```{r}
-
-```
-
-
-
-##Estimación de Biomasa
-  
-  -Se evaluará la relación entre el Diámetro máximo del disco y el peso.
--Se estiman los parámetros para establecer la relación alométrica dada por la ecuación:
+Con datos obtenidos en 5 AMERB desde los 23º a los 36ºS, se estableció la relación entre el Diámetro máximo del disco y el peso del alga.
+Con esta relación se estimaron los parámetros para establecer la relación alométrica dada por la ecuación:
 
 $$
   \begin{aligned}
   B = aL^b 
   \end{aligned}
 $$ 
+```{r, echo=FALSE}
 
-```{r}
+Peso<-read.csv("pesoalgasIFOP.csv") %>% filter(Especie == "Lessonia trabeculata") %>% mutate(logPeso= log(peso), logDisco= log(Diametro.extraida)) %>% mutate(Latitude =rep("", times=length(AMERB), Longitud= rep("", times= length(AMERB))))
+Peso$AMERB <- gsub("Quintay sector B", "Quintay protected", Peso$AMERB)
+Peso$AMERB <- gsub("Quintay sector A", "Quintay protected", Peso$AMERB)
 
-Peso<-read.csv("pesoalgasIFOP.csv") 
-QuintayA<- Peso %>% filter(AMERB == "Quintay sector A")
-model1<-lm(log(Diametro.extraida)~log(peso), data= QuintayA)
-QuintayB<- Peso %>% filter(AMERB == "Quintay sector B")
-model2<-lm(log(Diametro.extraida)~log(peso), data= QuintayB)
-Carrizal<- Peso %>% filter(AMERB == "Carrizal bajo" & "Carrizal Bajo")
-model3<-lm(log(Diametro.extraida)~log(peso), data= Carrizal)
+
+conQ= (Peso$AMERB== "Quintay protected")
+Peso$Latitude[conQ] = "-23.415222"
+Peso$Longitude[conQ] = "-70.600943"
+
+conC= (Peso$AMERB== "Cobquecura")
+Peso$Latitude[conC] = "-36.164765"
+Peso$Longitude[conC] = "-72.816642"
+
+conV= (Peso$AMERB== "Ventana")
+Peso$Latitude[conV] = "-32.735717"
+Peso$Longitude[conV] = "-71.503350"
+
+conVi= (Peso$AMERB== "Los Vilos sector C")
+Peso$Latitude[conVi] = "-31.934100"
+Peso$Longitude[conVi] = "-71.517767"
+
+conCa= (Peso$AMERB== "Carrizal Bajo")
+Peso$Latitude[conCa] = "-28.040500"
+Peso$Longitude[conCa] = "-71.152083"
+
+conPY= (Peso$AMERB== "Punta el Yeso")
+Peso$Latitude[conPY] = "-23.415222"
+Peso$Longitude[conPY] = "-70.600943"
+
+ggplot(Peso, aes(x=Diametro.extraida , y=peso, group=Latitude))+ geom_point(aes(color=Latitude))
+
+ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_point(aes(color=Latitude))
+#model<-lm(logPeso~logDisco, data=Peso)
+#summary(model)
+#model1<-lm(log(peso)~log(Diametro.extraida)+AMERB, data=Peso)
+#summary(model1)
+#model2<-nls(peso~Diametro.extraida+AMERB, data=Peso)
+#summary(model2)
+
+model3<-glm(peso~I(log(Diametro.extraida))+AMERB, family = quasipoisson, data=Peso)
+summary(model3)
+anova(model3, test = "F")
+```
+
+En base a esta relación se estimó la pendiente 2.12524 y el intercepto -5.29154. El modelo indica que hay un efecto de la localidad en esta relación, por lo que no todos los sitios presentan la misma pendiente. Sin embargo, sólo la localidad de Los Vilos está generando estas diferencias significativas y los datos de estructura de tallas que serán utilizados para las estimaciones de biomasa no corresponden a esta localidad, por lo que utilizaremos los parametros obtenidos para todas las localidades.
+
+En función de estos parametros, la ecuación se resuelve mediante la transformación a logaritmo de las variables, y se remplazan los parametros en la ecuación:
+$$
+  \begin{aligned}
+log(B) =-5.29154 + 2.12524 * log(L)
+  \end{aligned}
+$$
+$$  
+  \begin{aligned}
+B =e^(-5.29154) * (L)^(2.12524)
+  \end{aligned}
+$$
+
+$$
+\begin{aligned}
+B= 0.0026*L^(2.12524)
+\end{aligned}
+$$
+
+```{r lm-Sitio, eval= F}
+
+## LINEAL MODEL PARA CADA SITIO
+
+Quintay<- Peso %>% filter(AMERB == "Quintay")
+Q<-lm(log(Diametro.extraida)~log(peso), data= Quintay)
+plot1<-ggplot(Quintay, aes(x=Diametro.extraida , y=peso))+ geom_smooth(model=lm)
+tidy(Q)
+
+
+Carrizal<- Peso %>% filter(AMERB == "Carrizal Bajo")
+Ca<-lm(log(Diametro.extraida)~log(peso), data= Carrizal)
+plot2<-ggplot(Carrizal, aes(x=Diametro.extraida , y=peso))+geom_smooth(model=lm)
+tidy(Ca) 
+
+Cobquecura<- Peso %>% filter(AMERB == "Cobquecura")
+Co<-lm(log(Diametro.extraida)~log(peso), data= Cobquecura)
+plot3<-ggplot(Cobquecura, aes(x=Diametro.extraida , y=peso))+ geom_smooth(model=lm)
+tidy(Co) 
+
+LosVilos<- Peso %>% filter(AMERB == "Los Vilos sector C")
+V<-lm(log(Diametro.extraida)~log(peso), data= LosVilos)
+plot4<-ggplot(LosVilos, aes(x=Diametro.extraida , y=peso))+ geom_smooth(model=lm)
+tidy(V) 
+
+PuntaYeso<-Peso %>% filter(AMERB == "Punta el Yeso")
+PY<-lm(log(Diametro.extraida)~log(peso), data= PuntaYeso)
+plot5<-ggplot(PuntaYeso, aes(x=Diametro.extraida , y=peso))+ geom_smooth(model=lm)
+tidy(PY) 
+
+Ventana<- Peso %>% filter(AMERB == "Ventana")
+Ve<-lm(log(Diametro.extraida)~log(peso), data= Ventana)
+plot6<-ggplot(Ventana, aes(x=Diametro.extraida , y=peso))+ geom_smooth(model=lm)
+tidy(Ve) 
+
+grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, nrow = 3)
 
 ```
 
-```{r}
-ggplot(Peso, aes(x=Diametro.extraida , y=peso, group=AMERB))+ geom_point(aes(color=AMERB))
+##Estimación Stanging stock
+###Bases de datos
+A partir de diferentes proyectos desde el años 2012 a la fecha se obtuvo información de la estructura de tallas de L. trabeculata.
 
-```
-  
-  
-  
+###2012-2014
+Primera base de datos proviene de un proyecto fondecytF11110351, y tiene información obtenida en terreno de las temporadas de otoño y primavera en los años 2012-2013 y para la temporada de verano del año 2014.
 
+Los monitoreos se realizaron a través de 2 transectos de 100 m perpendiculares a la costa, donde se evaluó la abundancia y diámetro del disco de las macroalgas en cuadrantes de 1m^2^ a cada lado del transecto en estaciones cada 10 m.
 
+```{r 2012-2014}
+F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover, allometric, a,b, Biomass)) %>% mutate(DF= rep("F11110351", times= length(Site)), Stipes= rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
+F11110351$Site<-as.character(F11110351$Site)
 
-
-```{r 2018, eval=FALSE}
-
-ifop18<-read.csv("2018.csv") %>% filter(Tipo.de.especie == "Macroalga parda") %>% select(-c(Dia,Mes,Year,Tipo.de.especie,Presencia,Abundancia.en.alga,Abundancia.en.sustrato,Chico..total,Chico.en.alga,Chico.en.sustrato,Mediano.total,Mediano.en.alga,Mediano.en.sustrato,Grande.total,Grande.en.alga,Grande.en.sustrato,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% 
-  
-  mutate(DF=rep("IFOP18", times= length(AMERB)),Season=rep("NA", times=length(AMERB)), Latitude=rep("NA", times=length(Site)), Longitude=rep("NA", times=length(Site)), a=rep("NA", times=length(Site)), b=rep("NA", times=length(Site)),allometric=rep("NA", times=length(Site)), Phase=rep("NA", times=length(Site)), Biomass=rep("NA", times=length(Site)))
-
-
-
-colnames(ifop18)[2] = "Date"
-ifop19<-read.csv("2019.csv") 
-
-
-# Date, Season , Var3
-#select(Series,DF,Date,Season,Site,Latitude,Longitude,Transect,Station,Depth,Replicate, Species,Phase,Size,Abundance,no. stipes,Length,a,b,allometric,Biomass,Frondosity)
-
-#para revisar que todas las columnas de todas las df sean iguales!
-colnames(ifop18)== colnames(ifop19)
-
+##cambio de nombre a un sitio para std con otras bd
+F11110351$Site <- gsub("LosMolles", "Los Molles protected", F11110351$Site)
+condYF12= (F11110351$Season== "Fall2012")
+F11110351$Year[condYF12] = "2012"
+condYS12= (F11110351$Season== "Spring2012")
+F11110351$Year[condYS12] = "2012"
+condYF13= (F11110351$Season== "Fall2013")
+F11110351$Year[condYF13] = "2013"
+condYS13= (F11110351$Season== "Spring2013")
+F11110351$Year[condYS13] = "2013"
+condYSu14= (F11110351$Season== "Summer 2014")
+F11110351$Year[condYSu14] = "2014"
 ```
 
+###2015
+La segunda base de datos proviene del proyecto fondecyt F1140841 donde se realizó un sólo muestreo durante la temporada de verano 2015, en transectos de 50 m perpendiculares a la costa, donde se medió la abundancia de algas y morfología de las algas (incluyendo el diámetro del disco) en cuadrantes de 1m^2^ a cada lado del transecto en estaciones cada 10 m.
 
-A partir de diferentes bases de datos (Tabla 1) provenientes de proyectos FONDECYT y monitoreos realizados en áreas de manejo de recursos bentónicos (AMERB) se realizará una estimación de la biomasa acumulada en las poblaciones de Lessonia trabeculata, como un proxy de la productividad primaria de esta especie, para un total de 15 sitios, con información que fluctua desde el año 2012 al 2019.
+```{r 2015}
 
+F1140841<-read.csv("2015.csv") %>% filter(Subset == "kelp") %>% select(-c(Subset,Temperature, Visbility, Holdfast.Use,Blade.Use,Cover...,X,Biomass)) %>% mutate(DF= rep("F1140841", times= length(Site)), Length=rep("NA", times=length(Site))) %>% rename(Stipes= "no..stipes", Size= "Size.cm.", Station="station")
 
-```{r, eval=F }
-Georeferencias<-read.csv("georeferencias.csv", sep=",")
-kable(Tabla, caption="Pasajeros clasificados por sexo y edad") %>% kable_styling(bootstrap_options = c("striped","hover", "condensed"), full_width = F)
+F1140841$Site <- gsub("Quintay", "QuintayAMERB", F1140841$Site)
+F1140841$Site <- gsub("El Franc\x8es", "TotoralilloOA", F1140841$Site)
+F1140841$Site <- gsub("Algarrobo", "AlgarroboOA", F1140841$Site)
+F1140841$Season <- gsub("summer 2014", "summer2014", F1140841$Season)
+#Rellenar coordenadas
+
+cond1= (F1140841$Site== "AlgarroboOA")
+F1140841$Latitude[cond1] = "-33.36483661"
+F1140841$Longitude[cond1] = "-71.69101847"
+
+cond2= (F1140841$Site== "TotoralilloOA")
+F1140841$Latitude[cond2] = "-30.0939569"
+F1140841$Longitude[cond2] = "-71.37972619"
+
+cond3= (F1140841$Site== "QuintayAMERB")
+F1140841$Latitude[cond3] = "-33.19193931"
+F1140841$Longitude[cond3] = "-71.70033633"
+
+condYSu14.2= (F1140841$Season== "summer2014")
+F1140841$Year[condYSu14.2] = "2014"
 ```
+
+###2015-2017
+
+La tercera base de datos proviene del proyecto fondecyt 1151094 donde se realizaron muestreos en dos localidades de la V región, Quintay y Los Molles. En cada sitio se realizaron monitoreos en una zona expuesta y en una zona protegida. En cada zona se muestrearon las algas en cuadrantes de 1m2, en 6 transectos de 25 m perpendiculares a la costa, 3 fueron realizados en zonas profundas (15 m) y 3 en zonas someras (5m). Los  cuadrantes fueron dispuestos en estaciones cada 5 metros.
+
+```{r 2015-2016}
+F1151094<-read.csv("2015-2017.csv") %>% filter(Habitat == "kelp") %>% 
+  select(-c(Survey,Habitat,Sampler, High.1,High.2, Mean.High,comentario,Data_Entry,Num_parches)) %>%
+  mutate(DF=rep("F1151094", times=611), Year=rep("NA", times=length(Site)),Season=rep("NA", times=length(Site)), Latitude=rep("NA", times=length(Site)), Longitude=rep("NA", times=length(Site)), Phase=rep("NA", times=length(Site))) %>% rename(Series ="serie",  Station= "Station.replicate", Replicate= "Pseudoreplicate",Size= "Width")
 
 
