@@ -324,11 +324,16 @@ condicion17= (ifop18$Site== "Ventanas")
 ifop18$Latitude[condicion17]="-32.735717" 
 ifop18$Longitude[condicion17]="-71.503350"
 
- 
-####LAS COORDENADAS DE QUINTAY ESTAN EQUIVOCADAS EN EL DF PESO!!!
+#calculo biomasa
+ifop18$Biomass= (0.0026)*((ifop18$Size)^(2.12524))
 
+##2019
 ifop19<-read.csv("2019.csv")
 
+
+
+
+Alldata2<- rbind(Alldata,ifop18)
 ```
 
 
