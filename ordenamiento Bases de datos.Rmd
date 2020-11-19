@@ -26,7 +26,7 @@ $$
   B = aL^b 
   \end{aligned}
 $$ 
-```{r, echo=FALSE}
+```{r WL-rel, echo=FALSE}
 
 Peso<-read.csv("pesoalgasIFOP.csv") %>% filter(Especie == "Lessonia trabeculata") %>% mutate(logPeso= log(peso), logDisco= log(Diametro.extraida)) %>% mutate(Latitude =rep("", times=length(AMERB), Longitud= rep("", times= length(AMERB))))
 Peso$AMERB <- gsub("Quintay sector B", "Quintay protected", Peso$AMERB)
@@ -34,8 +34,8 @@ Peso$AMERB <- gsub("Quintay sector A", "Quintay protected", Peso$AMERB)
 
 
 conQ= (Peso$AMERB== "Quintay protected")
-Peso$Latitude[conQ] = "-23.415222"
-Peso$Longitude[conQ] = "-70.600943"
+Peso$Latitude[conQ] = "-33.185000"
+Peso$Longitude[conQ] = "-71.691650"
 
 conC= (Peso$AMERB== "Cobquecura")
 Peso$Latitude[conC] = "-36.164765"
@@ -232,8 +232,11 @@ F1151094std= F1151094 %>% select(-c(Exposure,Zone)) %>% mutate(Season=rep("NA", 
 F1151094std$Site <- gsub("Quintay protected", "QuintayAMERB", F1151094std$Site)
 ```
 
+###Variación temporal y latitudinal
+Se evaluó como varió el standing stock en 7 sitios de la IV y V regiones, desde `r min(Site$Latitude)` hasta `r max(Site$Latitude)`º S, durante los años 2012 y 2013 en temporadas de otoño y primavera. 
 
-```{r}
+
+```{r Alldata-Biomass, echo= F}
 
 #unir las 3 bases de datos y calculo de biomasa con los parametros obtenidos 
 Alldata= rbind(F11110351,F1140841,F1151094std)
@@ -268,12 +271,65 @@ anova(model1, test = "F")
 
 ```
 
+###2018 y 2019
 
 ```{r}
 
-BiomassplotYear<-ggplot(Site, aes(x= fct_relevel(Season, "Fall2012", "Spring2012","Fall2013", "Spring2013", y=meanB))) + geom_bar(position = "dodge", stat = "identity", size =.2)+
-labs(x= "Season" ,y="Biomasa/m2")+
-geom_errorbar(aes(ymin=meanB-sd, ymax= meanB+sd),width=.2,
-position=position_dodge(.9))+ theme_classic()+facet_wrap(Site~., ncol=1)
+ifop18<-read.csv("2018.csv") %>% filter(Especie == "Lessonia trabeculata") %>% select(-c(Dia,Mes,Year,Tipo.de.especie,Presencia,Abundancia.en.alga,Abundancia.en.sustrato,Chico..total,Chico.en.alga,Chico.en.sustrato,Mediano.total,Mediano.en.alga,Mediano.en.sustrato,Grande.total,Grande.en.alga,Grande.en.sustrato,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie", Date= "Fecha", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad..m.", Species="Especie", Abundance="Abundancia.total",Size="Diametro.del.disco", Stipes="No.estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=702), DF= rep("ifop2018", times= 702),Year= rep("2018", times= 702), Station=replicate(1, Replicate),Phase= rep("NA", times=702),Frondosity= rep("NA", times=702)) 
+
+##Cambiar nombre de los sitios
+ifop18$Site <- gsub("Quintay sector B", "Quintay sur", ifop18$Site)
+ifop18$Site <- gsub("Quintay sector A", "Quintay protected", ifop18$Site)
+ifop18$Site <- gsub("Cha\x96aral de aceituno sector C", "Chanaral AMERB", ifop18$Site)
+ifop18$Site <- gsub("Reserva Cha\x96aral de aceituno", "Chanaral Reserva", ifop18$Site)
+##Definir coordenadas
+
+condicion8= (ifop18$Site== "Carrizal bajo")
+ifop18$Latitude[condicion8]="-28.040500" 
+ifop18$Longitude[condicion8]="-71.152083"
+  
+condicion9= (ifop18$Site== "Chanaral AMERB")
+ifop18$Latitude[condicion9]="-29.132117" 
+ifop18$Longitude[condicion9]="-71.489500"
+
+condicion10= (ifop18$Site== "Cobquecura")
+ifop18$Latitude[condicion10]="-36.164765" 
+ifop18$Longitude[condicion10]="-72.816642"
+
+condicion11= (ifop18$Site== "ECIM")
+ifop18$Latitude[condicion11]="-33.504383" 
+ifop18$Longitude[condicion11]="-71.633250"
+  
+condicion12= (ifop18$Site== "Los Vilos sector C")
+ifop18$Latitude[condicion12]="-31.934100"
+ifop18$Longitude[condicion12]="-71.517767"
+  
+condicion13= (ifop18$Site== "Punta el Yeso")
+ifop18$Latitude[condicion13]="-23.415222" 
+ifop18$Longitude[condicion13]="-70.600943"
+
+condicion14= (ifop18$Site== "Quintay protected")
+ifop18$Latitude[condicion14]="-33.185000" 
+ifop18$Longitude[condicion14]="-71.691650"
+
+condicion15= (ifop18$Site== "Quintay sur")
+ifop18$Latitude[condicion15]="-33.204333" 
+ifop18$Longitude[condicion15]="-71.703750"
+
+condicion16= (ifop18$Site== "Chanaral Reserva")
+ifop18$Latitude[condicion16]="-29.025167" 
+ifop18$Longitude[condicion16]="-71.565917"
+
+condicion17= (ifop18$Site== "Ventanas")
+ifop18$Latitude[condicion17]="-32.735717" 
+ifop18$Longitude[condicion17]="-71.503350"
+
+ 
+####LAS COORDENADAS DE QUINTAY ESTAN EQUIVOCADAS EN EL DF PESO!!!
+
+ifop19<-read.csv("2019.csv")
 
 ```
+
+
+##
