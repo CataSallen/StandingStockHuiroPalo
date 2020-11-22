@@ -12,6 +12,7 @@ library(knitr)
 library(gridExtra)
 library(kableExtra)
 library(stringr)
+library(readxl)
 library(broom)
 library(MuMIn)
 ```
@@ -232,10 +233,7 @@ F1151094std= F1151094 %>% select(-c(Exposure,Zone)) %>% mutate(Season=rep("NA", 
 F1151094std$Site <- gsub("Quintay protected", "QuintayAMERB", F1151094std$Site)
 ```
 
-###Variación temporal y latitudinal
-Se evaluó como varió el standing stock en 7 sitios de la IV y V regiones, desde `r min(Site$Latitude)` hasta `r max(Site$Latitude)`º S, durante los años 2012 y 2013 en temporadas de otoño y primavera. 
-
-
+####Variación latitudinal y temporal 2012-2013
 ```{r Alldata-Biomass, echo= F}
 
 #unir las 3 bases de datos y calculo de biomasa con los parametros obtenidos 
@@ -270,19 +268,60 @@ summary(model1)
 anova(model1, test = "F")
 
 ```
+Se evaluó como varió el standing stock en 7 sitios de la IV y V regiones, desde `r min(Site$Latitude)` hasta `r max(Site$Latitude)`º S, durante los años 2012 y 2013 en temporadas de otoño y primavera. 
 
 ###2018 y 2019
+La evaluación de las AMERB para el ifop están divididas en diferentes bases de datos. Dentro de los muestreos submareales, tenemos 10 transectos de 100 m donde se realiza la evaluación directa (i.e abundancia de algas adultas y juveniles en estaciones de 10 m de largo- 1 m a cada lado), la morfología de las algas que se evalua a través de cuadrantes (1m2 cada 10 m de transecto), y los censos de peces que son cuantificados en un "tunel" a lo largo del transecto.
+Para los objetivos de este análisis sólo se trabajaron las bases de datos de los cuadrantes submareales para estimar:
+1) variación de la biomasa en un gradiente latitudinal
+2) variación de a biomasa anual
+3) correlación entre la biomasa y la abundancia de herbivoros
+4) correlación de la morfología de las algas y la abundancia de herbívoros
 
 ```{r}
+#DF de los transectos submareales 
+#transectsub<-read.csv("transectos18.csv")
+library(readxl)
+transectsub<- read_xls("transectos18.xls") ##no me leyo el csv, lo lei con xls y lo transformé a csv  
+write.csv(transectsub, "transectossub18.csv")
 
-ifop18<-read.csv("2018.csv") %>% filter(Especie == "Lessonia trabeculata") %>% select(-c(Dia,Mes,Year,Tipo.de.especie,Presencia,Abundancia.en.alga,Abundancia.en.sustrato,Chico..total,Chico.en.alga,Chico.en.sustrato,Mediano.total,Mediano.en.alga,Mediano.en.sustrato,Grande.total,Grande.en.alga,Grande.en.sustrato,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie", Date= "Fecha", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad..m.", Species="Especie", Abundance="Abundancia.total",Size="Diametro.del.disco", Stipes="No.estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=702), DF= rep("ifop2018", times= 702),Year= rep("2018", times= 702), Station=replicate(1, Replicate),Phase= rep("NA", times=702),Frondosity= rep("NA", times=702)) 
+transectsub2<-read.csv("transectossub18.csv", sep = ",") %>% select(c(`Ano`,`AMERB`,`Transecto`,`Latitud.inicio`, `Longitud.inicio`)) %>% rename(Year= "Ano", Site= "AMERB", Transect="Transecto", Latitude= "Latitud.inicio", Longitude="Longitud.inicio")
+
+transectsub2$Site <- gsub("Quintay sector B", "Quintay sur", transectsub2$Site)
+transectsub2$Site <- gsub("Quintay sector A", "Quintay protected", transectsub2$Site)
+transectsub2$Site <- gsub("Chañaral de Aceituno Sector C", "Chanaral AMERB", transectsub2$Site)
+transectsub2$Site <- gsub("Reserva Chañaral de Aceituno", "Chanaral Reserva", transectsub2$Site)
+transectsub2$Site <- gsub("Carrizal Bajo", "Carrizal bajo", transectsub2$Site)
+transectsub2$Site <- gsub("Punta Yeso", "Punta el Yeso", transectsub2$Site)
+transectsub2$Site <- gsub("Ventana", "Ventanas", transectsub2$Site)
+transectsub2$Site<-as.factor(transectsub2$Site)
+transectsub2$Transect<-as.integer(transectsub2$Transect)
+
+
+#DF de los cuadrantes submareales 
+ifop18<-read.csv("2018.csv") %>% select(-c(Dia,Mes, Presencia,Abundancia.en.alga,Abundancia.en.sustrato,Chico..total,Chico.en.alga,Chico.en.sustrato,Mediano.total,Mediano.en.alga,Mediano.en.sustrato,Grande.total,Grande.en.alga,Grande.en.sustrato,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie", Date= "Fecha", Year= "Ano", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad..m.",Group="Tipo.de.especie", Species="Especie", Abundance="Abundancia.total",Size="Diametro.del.disco", Stipes="No.estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=length(Series)), DF= rep("ifop2018", times= length(Series)), Station=replicate(1, Replicate),Phase= rep("NA", times=length(Series)),Frondosity= rep("NA", times=length(Series))) 
+
 
 ##Cambiar nombre de los sitios
 ifop18$Site <- gsub("Quintay sector B", "Quintay sur", ifop18$Site)
 ifop18$Site <- gsub("Quintay sector A", "Quintay protected", ifop18$Site)
 ifop18$Site <- gsub("Cha\x96aral de aceituno sector C", "Chanaral AMERB", ifop18$Site)
 ifop18$Site <- gsub("Reserva Cha\x96aral de aceituno", "Chanaral Reserva", ifop18$Site)
+ifop18$Site <- gsub("Reserva Cha\x96aral de Aceituno", "Chanaral Reserva", ifop18$Site)
+ifop18$Site <- gsub("Punta El Yeso", "Punta el Yeso", ifop18$Site)
+ifop18$Group <- gsub("Macroalga", "Macroalga parda", ifop18$Group)
+ifop18$Group <- gsub("Macroalga parda parda", "Macroalga parda", ifop18$Group)
+ifop18$Site<-as.factor(ifop18$Site)
+ifop18$Transect<-as.integer(ifop18$Transect)
+
+
 ##Definir coordenadas
+## unir coordenadas de los transectos con datos de cuadrantes 
+
+ifop_coordenadas<-left_join(ifop18,transectsub2)
+
+###Aquí se puede ver que no todas las transectas tienen datos de las coordenadas, por lo que usaremos una coordenada por sitio.
+###Coordenadas serán incluidas manualmente en la base de datos ifop18
 
 condicion8= (ifop18$Site== "Carrizal bajo")
 ifop18$Latitude[condicion8]="-28.040500" 
@@ -324,17 +363,80 @@ condicion17= (ifop18$Site== "Ventanas")
 ifop18$Latitude[condicion17]="-32.735717" 
 ifop18$Longitude[condicion17]="-71.503350"
 
+
+
+
+
+
+##2019
+ifop19<-read.csv("2019.csv") %>% select(-c(Dia,Mes,Metros.del.transecto,Abundancia.herbivoros,Frondosidad,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie",Year="Ano", Date= "Fecha", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad",Group="Tipo.de.especie", Species="Especie", Abundance="Abundancia.Huiro",Size="Diametro.del.disco", Stipes="estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=length(Series)), DF= rep("ifop2019", times= length(Series)),Station=replicate(1, Replicate),Phase= rep("NA", times=length(Series)),Frondosity= rep("NA", times=length(Series))) ##agregamos Station que en este muestreo es lo mismo que nuestras unidaddes muestreales que son llamadas por la variable Replicate
+
+ifop19$Size<-as.numeric(ifop19$Size)
+ifop19$Site <- gsub("Quintay B", "Quintay sur", ifop19$Site)
+ifop19$Site <- gsub("Quintay A", "Quintay protected", ifop19$Site)
+
+#latitud
+condicion18= (ifop19$Site== "Ventanas")
+ifop19$Latitude[condicion18]="-32.735717" 
+ifop19$Longitude[condicion18]="-71.503350"
+condicion19= (ifop19$Site== "Cobquecura")
+ifop19$Latitude[condicion19]="-36.164765" 
+ifop19$Longitude[condicion19]="-72.816642"
+condicion20= (ifop19$Site== "Quintay protected")
+ifop19$Latitude[condicion20]="-33.185000" 
+ifop19$Longitude[condicion20]="-71.691650"
+condicion21= (ifop19$Site== "Quintay sur")
+ifop19$Latitude[condicion21]="-33.204333" 
+ifop19$Longitude[condicion21]="-71.703750"
+
 #calculo biomasa
-ifop18$Biomass= (0.0026)*((ifop18$Size)^(2.12524))
 
-##2019
-ifop19<-read.csv("2019.csv")
+unique(ifop19$Abundance) ##[1] 1  0   -, tenemos un - que debería ser un NA por que la abundancia no aplica a los datos de animales
 
 
 
 
-Alldata2<- rbind(Alldata,ifop18)
+
+#para finalmente tener la base de datos del 2018 y 2019
+IFOP1819<- rbind(ifop18,ifop19)
+unique(IFOP1819$Group)
+unique(IFOP1819$Abundance)
+unique(ifop18$Abundance)
+unique(df$Abundance)
+
+
+Ltrabeculata<-IFOP1819 %>% filter (Group=="Macroalga parda") %>% filter(Species !="Lessonia berteroana"& Species !="Macrocystis pyrifera") %>% mutate(Biomass=(0.0026)*((Size)^(2.12524))) %>%  mutate(Biomass=replace_na(Biomass, 0))
+  
+#Alldata2<-rbind(Alldata,IFOP1819)
+#Alldata3<-rbind(Alldata,IFOP1819[-])
 ```
 
 
-##
+####Variación de la biomasa en un gradiente latitudinal
+
+```{r}
+
+Quad1819<-Ltrabeculata %>%  group_by(DF,Site,Latitude,Transect, Replicate) %>% summarise(Biomassm2= sum(Biomass))
+Station1819<-Quad1819 %>% group_by(DF, Site, Latitude, Transect) %>% summarise(meanStation=mean(Biomassm2))
+Transect1819<-Station1819 %>% group_by(DF, Site, Latitude, Transect) %>% summarise(meanTransect=mean(meanStation))
+Site1819<-Transect1819  %>% group_by(DF, Site, Latitude) %>% summarise(Biomassbysite=mean(meanTransect), se=sd(meanTransect)/sqrt(length(Transect)))
+
+Latvar1819<-ggplot(Site1819, aes(x=fct_relevel(Site, "Punta el Yeso", "Carrizal bajo",
+"Chanaral AMERB","Chanaral Reserva","Los Vilos sector C","Ventanas", "Quintay protected","Quintay sur","ECIM","Cobquecura"), y=Biomassbysite, fill=DF)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ labs(x= "Site" ,y="Biomasa/m2", fill="DF")+
+geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
+position=position_dodge(.9))+ theme_classic()
+
+#+facet_wrap(Site~., ncol=1)
+Seasonvar
+
+Site$Season<- factor(Site$Season, levels = c("Fall2012", "Spring2012","Fall2013", "Spring2013"))
+Latitudvar<- ggplot(Site, aes(x=fct_relevel(Site, "CaletaHornosOA",
+"TotoralilloOA","PuntatalcaAMERB", "Los Molles protected", "ZapallarAmerb","QuintayAMERB","AlgarroboOA"), y=Biomassbysite))+ ggtitle('Biomasa Lessonia trabeculata')+
+geom_bar(position = "dodge", stat = "identity", size =.2)+
+labs(x= "Sitios" ,y="Biomasa/m2")+
+geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
+position=position_dodge(.9))+ theme_classic()+facet_wrap(Season~., ncol=1, nrow = 4)
+Latitudvar
+```
+
+
