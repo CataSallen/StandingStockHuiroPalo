@@ -244,27 +244,27 @@ Alldata$Biomass= (0.0026)*((Alldata$Size)^(2.12524))
 
 Quad<-Alldata %>% filter(DF=="F11110351", Season !="Summer 2014") %>% group_by(Season,Site,Latitude,Transect, Station, Replicate) %>% summarise(Biomassm2= sum(Biomass))
 Station<-Quad %>% group_by(Season, Site, Latitude, Transect, Station) %>% summarise(meanStation=mean(Biomassm2))
-Transect<-Station %>% group_by(Season, Site, Latitude, Transect) %>% summarise(meanTransect=mean(meanStation))
+Transect<-Station %>% group_by(Season, Site, Latitude, Transect) %>% summarise(meanTransect=mean(meanStation), seTransect=sd(meanStation)/sqrt(length(Transect)))
 Site<-Transect  %>% group_by(Season, Site, Latitude) %>% summarise(Biomassbysite=mean(meanTransect), se=sd(meanTransect)/sqrt(length(Transect)))
 
+
+##Grafico variación latitudinal por temporada
 Seasonvar<-ggplot(Site, aes(x=Latitude, y=Biomassbysite, fill= fct_relevel(Season, "Fall2012", "Spring2012","Fall2013", "Spring2013"))) + geom_bar(position = "dodge", stat = "identity", size =.2)+scale_fill_hue(l=40, c=35)+
 labs(x= "Season" ,y="Biomasa/m2", fill="Season")+
 geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
 position=position_dodge(.9))+ theme_classic()
-#+facet_wrap(Site~., ncol=1)
-Seasonvar
 
 Site$Season<- factor(Site$Season, levels = c("Fall2012", "Spring2012","Fall2013", "Spring2013"))
+
 Latitudvar<- ggplot(Site, aes(x=fct_relevel(Site, "CaletaHornosOA",
 "TotoralilloOA","PuntatalcaAMERB", "Los Molles protected", "ZapallarAmerb","QuintayAMERB","AlgarroboOA"), y=Biomassbysite))+ ggtitle('Biomasa Lessonia trabeculata')+
 geom_bar(position = "dodge", stat = "identity", size =.2)+
 labs(x= "Sitios" ,y="Biomasa/m2")+
 geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
 position=position_dodge(.9))+ theme_classic()+facet_wrap(Season~., ncol=1, nrow = 4)
-Latitudvar
 
+##GLM
 model1<-glm(meanTransect~Latitude*Season, family= quasipoisson, data=Transect)##Identificar qué formula se debe hacer (+ o *)
-summary(model1)
 anova(model1, test = "F")
 
 ```
@@ -278,14 +278,13 @@ Para los objetivos de este análisis sólo se trabajaron las bases de datos de l
 3) correlación entre la biomasa y la abundancia de herbivoros
 4) correlación de la morfología de las algas y la abundancia de herbívoros
 
-```{r}
-#DF de los transectos submareales 
-#transectsub<-read.csv("transectos18.csv")
-library(readxl)
-transectsub<- read_xls("transectos18.xls") ##no me leyo el csv, lo lei con xls y lo transformé a csv  
-write.csv(transectsub, "transectossub18.csv")
+```{r ifop18, echo=FALSE}
 
-transectsub2<-read.csv("transectossub18.csv", sep = ",") %>% select(c(`Ano`,`AMERB`,`Transecto`,`Latitud.inicio`, `Longitud.inicio`)) %>% rename(Year= "Ano", Site= "AMERB", Transect="Transecto", Latitude= "Latitud.inicio", Longitude="Longitud.inicio")
+
+##2018
+##Cargue la planilla de los transectos submareales para extraer las coordenadas de cada transectos y unirlas a la planillas de los cuadrantes
+
+transectsub2<-read.csv("transectossub18.csv") %>% select(c(`Ano`,`AMERB`,`Transecto`,`Latitud.inicio`, `Longitud.inicio`)) %>% rename(Year= "Ano", Site= "AMERB", Transect="Transecto", Latitude= "Latitud.inicio", Longitude="Longitud.inicio")
 
 transectsub2$Site <- gsub("Quintay sector B", "Quintay sur", transectsub2$Site)
 transectsub2$Site <- gsub("Quintay sector A", "Quintay protected", transectsub2$Site)
@@ -298,11 +297,12 @@ transectsub2$Site<-as.factor(transectsub2$Site)
 transectsub2$Transect<-as.integer(transectsub2$Transect)
 
 
+
 #DF de los cuadrantes submareales 
 ifop18<-read.csv("2018.csv") %>% select(-c(Dia,Mes, Presencia,Abundancia.en.alga,Abundancia.en.sustrato,Chico..total,Chico.en.alga,Chico.en.sustrato,Mediano.total,Mediano.en.alga,Mediano.en.sustrato,Grande.total,Grande.en.alga,Grande.en.sustrato,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie", Date= "Fecha", Year= "Ano", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad..m.",Group="Tipo.de.especie", Species="Especie", Abundance="Abundancia.total",Size="Diametro.del.disco", Stipes="No.estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=length(Series)), DF= rep("ifop2018", times= length(Series)), Station=replicate(1, Replicate),Phase= rep("NA", times=length(Series)),Frondosity= rep("NA", times=length(Series))) 
 
 
-##Cambiar nombre de los sitios
+##Cambio en el nombre de los sitios
 ifop18$Site <- gsub("Quintay sector B", "Quintay sur", ifop18$Site)
 ifop18$Site <- gsub("Quintay sector A", "Quintay protected", ifop18$Site)
 ifop18$Site <- gsub("Cha\x96aral de aceituno sector C", "Chanaral AMERB", ifop18$Site)
@@ -314,18 +314,15 @@ ifop18$Group <- gsub("Macroalga parda parda", "Macroalga parda", ifop18$Group)
 ifop18$Site<-as.factor(ifop18$Site)
 ifop18$Transect<-as.integer(ifop18$Transect)
 
+## Join by site-transect para poner unir la info de las coordenadas de los transectos en los cuadrantes
+ifop_coordenadas18<-left_join(ifop18,transectsub2)
 
-##Definir coordenadas
-## unir coordenadas de los transectos con datos de cuadrantes 
 
-ifop_coordenadas<-left_join(ifop18,transectsub2)
-
-###Aquí se puede ver que no todas las transectas tienen datos de las coordenadas, por lo que usaremos una coordenada por sitio.
-###Coordenadas serán incluidas manualmente en la base de datos ifop18
+###Sin embargo, para findes de gráfica, las Coordenadas serán incluidas manualmente en la base de datos ifop18
 
 condicion8= (ifop18$Site== "Carrizal bajo")
-ifop18$Latitude[condicion8]="-28.040500" 
 ifop18$Longitude[condicion8]="-71.152083"
+ifop18$Latitude[condicion8]="-28.040500" 
   
 condicion9= (ifop18$Site== "Chanaral AMERB")
 ifop18$Latitude[condicion9]="-29.132117" 
@@ -363,19 +360,35 @@ condicion17= (ifop18$Site== "Ventanas")
 ifop18$Latitude[condicion17]="-32.735717" 
 ifop18$Longitude[condicion17]="-71.503350"
 
+```
 
-
-
-
+```{r ifop19, echo=FALSE}
 
 ##2019
+##Transectos 
+transectsub19xls<- read_xls("transectossub19.xls") ##no me leyo el csv, lo lei con xls y lo transformé a csv  
+write.csv(transectsub19xls, "transectossub19.csv")
+transectsub19<-read.csv("transectossub19.csv", sep=",") %>% select(c(`ano`,`AMERB`,`Transecto`,`Latitud.profundo`, `Longitud.profundo`)) %>% rename(Year= "ano", Site= "AMERB", Transect="Transecto", Latitude= "Latitud.profundo", Longitude="Longitud.profundo")
+
+transectsub19$Site <- gsub("Quintay sector B", "Quintay sur", transectsub19$Site)
+transectsub19$Site <- gsub("Quintay sector A", "Quintay protected", transectsub19$Site)
+transectsub19$Site<-as.factor(transectsub19$Site)
+transectsub19$Transect<-as.integer(transectsub19$Transect)
+
+#Cuarantes
 ifop19<-read.csv("2019.csv") %>% select(-c(Dia,Mes,Metros.del.transecto,Abundancia.herbivoros,Frondosidad,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie",Year="Ano", Date= "Fecha", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad",Group="Tipo.de.especie", Species="Especie", Abundance="Abundancia.Huiro",Size="Diametro.del.disco", Stipes="estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=length(Series)), DF= rep("ifop2019", times= length(Series)),Station=replicate(1, Replicate),Phase= rep("NA", times=length(Series)),Frondosity= rep("NA", times=length(Series))) ##agregamos Station que en este muestreo es lo mismo que nuestras unidaddes muestreales que son llamadas por la variable Replicate
 
 ifop19$Size<-as.numeric(ifop19$Size)
 ifop19$Site <- gsub("Quintay B", "Quintay sur", ifop19$Site)
 ifop19$Site <- gsub("Quintay A", "Quintay protected", ifop19$Site)
 
-#latitud
+
+## Join by site-transect para poner unir la info de las coordenadas de los transectos en los cuadrantes
+ifop_coordenadas19<-left_join(ifop19,transectsub19)
+
+
+##Igual que antes, para findes de gráfica, las Coordenadas fueron incluidas manualmente en ifop19 
+
 condicion18= (ifop19$Site== "Ventanas")
 ifop19$Latitude[condicion18]="-32.735717" 
 ifop19$Longitude[condicion18]="-71.503350"
@@ -384,38 +397,28 @@ ifop19$Latitude[condicion19]="-36.164765"
 ifop19$Longitude[condicion19]="-72.816642"
 condicion20= (ifop19$Site== "Quintay protected")
 ifop19$Latitude[condicion20]="-33.185000" 
-ifop19$Longitude[condicion20]="-71.691650"
+ifop19$Longitude[condicion20]="-71.691650" 
 condicion21= (ifop19$Site== "Quintay sur")
 ifop19$Latitude[condicion21]="-33.204333" 
 ifop19$Longitude[condicion21]="-71.703750"
 
-#calculo biomasa
 
-unique(ifop19$Abundance) ##[1] 1  0   -, tenemos un - que debería ser un NA por que la abundancia no aplica a los datos de animales
+ifop2019<-ifop19 %>% mutate(Abundance = str_replace(Abundance, "-","NA"))##[1] 1  0   -, tenemos un - que debería ser un NA por que la abundancia no aplica a los datos que presentan este simbolo (animales).
+```
 
+```{r ifop1819, echo=FALSE}
+#unimos los datos 2018 y 2019
+IFOP1819<- rbind(ifop18,ifop2019)
 
+Ltrabeculata<-IFOP1819 %>% filter (Group=="Macroalga parda") %>% filter(Species !="Lessonia berteroana"& Species !="Macrocystis pyrifera") %>% mutate(Biomass=(0.0026)*((Size)^(2.12524))) %>%  mutate(Biomass=replace_na(Biomass, 0)) %>%  mutate(Size= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Size)), Stipes= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Stipes)), Length= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Length)))
 
-
-
-#para finalmente tener la base de datos del 2018 y 2019
-IFOP1819<- rbind(ifop18,ifop19)
-unique(IFOP1819$Group)
-unique(IFOP1819$Abundance)
-unique(ifop18$Abundance)
-unique(df$Abundance)
-
-
-Ltrabeculata<-IFOP1819 %>% filter (Group=="Macroalga parda") %>% filter(Species !="Lessonia berteroana"& Species !="Macrocystis pyrifera") %>% mutate(Biomass=(0.0026)*((Size)^(2.12524))) %>%  mutate(Biomass=replace_na(Biomass, 0))
   
-#Alldata2<-rbind(Alldata,IFOP1819)
-#Alldata3<-rbind(Alldata,IFOP1819[-])
 ```
 
 
-####Variación de la biomasa en un gradiente latitudinal
+####Variación de la biomasa en un gradiente latitudinal y anual
 
 ```{r}
-
 Quad1819<-Ltrabeculata %>%  group_by(DF,Site,Latitude,Transect, Replicate) %>% summarise(Biomassm2= sum(Biomass))
 Station1819<-Quad1819 %>% group_by(DF, Site, Latitude, Transect) %>% summarise(meanStation=mean(Biomassm2))
 Transect1819<-Station1819 %>% group_by(DF, Site, Latitude, Transect) %>% summarise(meanTransect=mean(meanStation))
@@ -426,17 +429,71 @@ Latvar1819<-ggplot(Site1819, aes(x=fct_relevel(Site, "Punta el Yeso", "Carrizal 
 geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
 position=position_dodge(.9))+ theme_classic()
 
-#+facet_wrap(Site~., ncol=1)
-Seasonvar
+Latvar1819
 
-Site$Season<- factor(Site$Season, levels = c("Fall2012", "Spring2012","Fall2013", "Spring2013"))
-Latitudvar<- ggplot(Site, aes(x=fct_relevel(Site, "CaletaHornosOA",
-"TotoralilloOA","PuntatalcaAMERB", "Los Molles protected", "ZapallarAmerb","QuintayAMERB","AlgarroboOA"), y=Biomassbysite))+ ggtitle('Biomasa Lessonia trabeculata')+
-geom_bar(position = "dodge", stat = "identity", size =.2)+
-labs(x= "Sitios" ,y="Biomasa/m2")+
-geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
-position=position_dodge(.9))+ theme_classic()+facet_wrap(Season~., ncol=1, nrow = 4)
-Latitudvar
 ```
 
+
+####Correlación entre abundancia de herbívoros y biomasa de algas
+
+```{r}
+Herbivoros<-IFOP1819 %>% filter(Year=="2018", Species=="Tetrapygus niger" | Species =="Lessonia trabeculata" | Species=="Tegula tridentata" | Species=="Taliepus marginatus" | Species=="Loxechinus albus" | Species=="Taliepus sp" | Species== "Fissurella cumingii" | Species=="Tegula quadricostata" | Species=="FIssurella maxima" | Species== "Fissurella latimarginata" | Species=="Taliepus sp." | Species== "Taliepus dentatus"| Species=="Tegula atra" | Species=="Fissurella spp." | Species=="Fissurella costata") %>% mutate(Functional.Group= case_when(Species == "Lessonia trabeculata" ~ "Primary producers",
+                                                                      TRUE ~  "Herbivore"), Biomasa=(0.0026)*((Size)^(2.12524))) %>% mutate(Biomasa=replace_na(Biomasa, 0))
+
+
+Herbivoros$Abundance<-as.numeric(Herbivoros$Abundance)
+herbQuad<- Herbivoros %>% group_by(Site, Transect, Replicate, Functional.Group) %>% summarise(Abundances= sum(Abundance), Biomasa= sum(Biomasa))
+herbTransect<-herbQuad %>% group_by(Site, Transect, Functional.Group) %>% summarise(AbH= mean(Abundances), BioKelp= mean(Biomasa))
+
+ 
+ggplot(herbTransect, aes(x=AbH, y= BioKelp, colour= Site))+geom_point()
+```
+
+####Correlación entre Latitud y biomasa 
+
+```{r}
+Biomasa1213<-Station %>% mutate(Year=case_when(Season %in% c("Fall2012","Spring 2012") ~ "2012",
+                                             Season %in% c("Fall2013","Spring 2013") ~ "2013")) %>% 
+                        group_by(Year, Site, Latitude, Transect) %>% 
+                        summarise(meanBTrans=mean(meanStation), seBTrans=sd(meanStation)/sqrt(length(meanStation)))
+
+BiomasaQuad18<-Ltrabeculata %>% filter (Year=="2018") %>% group_by(Year, Site, Latitude, Transect,Replicate) %>% summarise(meanStation= sum(Biomass))
+BiomasaStat18<-BiomasaQuad18 %>% group_by(Year, Site, Latitude, Transect) %>% summarise(meanBTrans=mean(meanStation), seBTrans=sd(meanStation)/sqrt(length(meanStation)))
+
+##Alguna de estas me arregló el problema de unir las df
+Biomasa1213$Year<-as.factor(Biomasa1213$Year)
+Biomasa1213$Transect<-as.character(Biomasa1213$Transect)
+Biomasa1213<-as.data.frame(Biomasa1213)
+BiomasaStat18$Transect<-as.character(BiomasaStat18$Transect)
+BiomasaStat18$Year<-as.factor(BiomasaStat18$Year)
+BiomasaStat18<-as.data.frame(BiomasaStat18)
+
+#Unimos los datos del 2012, 2013 y 2018
+Biomasa121318<-bind_rows(Biomasa1213,BiomasaStat18)
+
+LatBiomass<-ggplot(Biomasa121318, aes(x=Latitude, y=meanBTrans, colour= Year)) + geom_point()
+LatBiomass
+```
+
+
+## Morfología
+
+```{r}
+library(vegan)
+library(MVA)
+
+##PCA morfologia 2018
+MORFO<-Ltrabeculata %>% filter(Length!="NaN",Stipes!="NaN", Size!="NaN") %>%  select( Size, Stipes, Length)
+MORFO$Size<-as.numeric(MORFO$Size)
+MORFO$Stipes<-as.numeric(MORFO$Stipes)
+MORFO$Length<-as.numeric(MORFO$Length)
+pcaMORFO<- prcomp(MORFO,
+                        center = TRUE,
+                        scale. = TRUE)
+print(pcaMORFO)
+plot(pcaMORFO , type = "l")
+
+summary(pcaMORFO)
+biplot(pcaMORFO)
+```
 
