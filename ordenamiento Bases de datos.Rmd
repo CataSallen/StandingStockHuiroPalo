@@ -192,8 +192,6 @@ cond3= (F1140841$Site== "QuintayAMERB")
 F1140841$Latitude[cond3] = "-33.19193931"
 F1140841$Longitude[cond3] = "-71.70033633"
 
-condYSu14.2= (F1140841$Season== "summer2014")
-F1140841$Year[condYSu14.2] = "2014"
 ```
 
 ###2015-2017
@@ -246,6 +244,8 @@ F1151094std$Site <- gsub("Quintay protected", "QuintayAMERB", F1151094std$Site)
 ```
 
 ####Variación latitudinal y temporal 2012-2013
+
+
 ```{r Alldata-Biomass, echo= F}
 
 #unir las 3 bases de datos y calculo de biomasa con los parametros obtenidos 
@@ -320,6 +320,8 @@ summary(model1)
 anova(model1, test = "F")
 
 ```
+
+
 Se evaluó como varió el standing stock en 7 sitios de la IV y V regiones, desde `r min(Site$Latitude)` hasta `r max(Site$Latitude)`º S, durante los años 2012 y 2013 en temporadas de otoño y primavera. 
 
 ###2018 y 2019
@@ -468,7 +470,7 @@ Ltrabeculata<-IFOP1819 %>% filter (Group=="Macroalga parda") %>% filter(Species 
 
 
 
-#Extraer latitudes por sitio ppara datos de temperatura
+#Extraer latitudes por sitio para datos de temperatura
 ```{r coordenadas Quintay}
 lat1819<-Ltrabeculata %>% group_by(Year,Site) %>% summarise(Latitude=unique(Latitude), Longitude=unique(Longitude))
 lat1216<-Alldata %>% group_by(Year,Site) %>% summarise(Latitude=unique(Latitude),Longitude=unique(Longitude))
@@ -480,118 +482,6 @@ kable(coordenadasQuintay, digits = 2) %>% kable_styling(bootstrap_options = c("s
 write.csv(coordenadasQuintay, "coordenadasQuintay.csv")
 ```
 
-
-####Variación de la biomasa en un gradiente latitudinal y anual
-
-```{r analisis por transecto}
-Quad1819<-Ltrabeculata %>%  group_by(DF,Site,Latitude,Transect, Replicate) %>% summarise(Biomassm2= sum(Biomass))
-Station1819<-Quad1819 %>% group_by(DF, Site, Latitude, Transect) %>% summarise(meanStation=mean(Biomassm2))
-Transect1819<-Station1819 %>% group_by(DF, Site, Latitude, Transect) %>% summarise(meanTransect=mean(meanStation))
-Site1819<-Transect1819  %>% group_by(DF, Site, Latitude) %>% summarise(Biomassbysite=mean(meanTransect), se=sd(meanTransect)/sqrt(length(Transect)))
-
-Latvar1819<-ggplot(Site1819, aes(x=fct_relevel(Site, "Punta el Yeso", "Carrizal bajo",
-"Chanaral AMERB","Chanaral Reserva","Los Vilos sector C","Ventanas", "Quintay protected","Quintay sur","ECIM","Cobquecura"), y=Biomassbysite, fill=DF)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ labs(x= "Site" ,y="Biomasa/m2", fill="DF")+
-geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-
-Latvar1819
-Latvaro1819vs<-ggplot(Site1819, aes(x=Latitude, y=Biomassbysite)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ labs(x= "Site", y="Biomasa/m2")+
-geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-Latvaro1819vs
-
-#Plot biomasa por sitio 2018 -comparación de la variación latitudinal
-Y18<-Site1819 %>% filter(DF=="ifop2018")
-#expresado con los nombres de los sitios
-Sitevar18<- ggplot(Y18, aes(x=fct_relevel(Site, "Punta el Yeso",
-"Carrizal bajo","Chanaral Reserva", "Chanaral AMERB", "Los Vilos sector C","Ventanas","Quintay protected","Quintay sur","ECIM", "Cobquecura"), y=Biomassbysite))+ ggtitle('Biomasa Lessonia trabeculata')+
-geom_bar(position = "dodge", stat = "identity", size =.2)+
-labs(x= "Sitios" ,y="Biomasa/m2")+
-geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-Sitevar18
-#expresado con las latitudes
-LATvar18<- ggplot(Y18, aes(x=Latitude, y= Biomassbysite))+ ggtitle('Biomasa Lessonia trabeculata')+
-geom_bar(position = "dodge", stat = "identity", size =.2)+
-labs(x= "Latitud" ,y="Biomasa/m2")+
-geom_errorbar(aes(ymin=Biomassbysite-se, ymax= Biomassbysite+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-LATvar18
-
-
-```
-
-```{r analisis por cuadrante}
-#Como no estoy evaluando la variación batimétrica de la biomasa, y mis unidades muestreales son los cuadrantes y no los transectos voy a promediar todos los cuadrantes pro sitio.
-
-#2018
-Biomasa2018b<- Quad1819 %>% filter(DF=="ifop2018")%>% group_by(Site,Latitude) %>% summarise(B= mean(Biomassm2) , se= sd(Biomassm2)/sqrt(length(Transect)))
-
-Sitevar18b<- ggplot(Biomasa2018b, aes(x=fct_relevel(Site, "Punta el Yeso",
-"Carrizal bajo","Chanaral Reserva", "Chanaral AMERB", "Los Vilos sector C","Ventanas","Quintay protected","Quintay sur","ECIM", "Cobquecura"), y=B))+ ggtitle('Biomasa Lessonia trabeculata 2018')+
-geom_bar(position = "dodge", stat = "identity", size =.2)+
-labs(x= "Sitios" ,y="Biomasa Kg/m2")+
-geom_errorbar(aes(ymin=B-se, ymax= B+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-Sitevar18b
-
-##2019
-Biomasa2019b<- Quad1819 %>% filter(DF=="ifop2019")%>% group_by(Site,Latitude) %>% summarise(B= mean(Biomassm2) , se= sd(Biomassm2)/sqrt(length(Transect)))
-
-Sitevar19b<- ggplot(Biomasa2019b, aes(x=fct_relevel(Site, "Punta el Yeso",
-"Carrizal bajo","Chanaral Reserva", "Chanaral AMERB", "Los Vilos sector C","Ventanas","Quintay protected","Quintay sur","ECIM", "Cobquecura"), y=B))+ ggtitle('Biomasa Lessonia trabeculata 2019')+
-geom_bar(position = "dodge", stat = "identity", size =.2)+
-labs(x= "Sitios" ,y="Biomasa Kg/m2")+
-geom_errorbar(aes(ymin=B-se, ymax= B+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-Sitevar19b
-
-#Variación entre 2018 y 2019
-Biomasa1819b<-Quad1819 %>% filter(Site=="Ventanas" | Site =="Quintay protected" | Site=="Quintay sur" | Site=="Cobquecura" ) %>% group_by(DF, Site,Latitude) %>% summarise(B= mean(Biomassm2) , se= sd(Biomassm2)/sqrt(length(Transect)))
-
-Biomasa1819bplot<-ggplot(Biomasa1819b, aes(x=fct_relevel(Site, "Ventanas","Quintay protected","Quintay sur","Cobquecura"), y=B, fill= DF)) + geom_bar(position = "dodge", stat = "identity", size =.2)+scale_fill_hue(l=40, c=35)+ 
-labs(x= "Sitios" ,y="Biomasa Kg/m2", fill="Año")+ggtitle('Biomasa Lessonia trabeculata 2018-2019')+
-geom_errorbar(aes(ymin=B-se, ymax= B+se),width=.2,
-position=position_dodge(.9))+ theme_classic()
-Biomasa1819bplot
-
-
-##GLM
-
-model2<-glm(B~Site+DF, family= quasipoisson, data=Biomasa1819b)##Identificar qué formula se debe hacer (+ o *)
-summary(model2)
-anova(model2, test = "F")
-
-```
-
-
-
-
-####Correlación entre abundancia de herbívoros y biomasa de algas
-
-```{r correlacion herbivoro alga}
-#Para el ano 2018 selecciono los herbivoros y las algas 
-
-Herbivoros<-IFOP1819 %>% filter(Year=="2018", Species=="Tetrapygus niger" | Species =="Lessonia trabeculata" | Species=="Tegula tridentata" | Species=="Taliepus marginatus" | Species=="Loxechinus albus" | Species=="Taliepus sp" | Species== "Fissurella cumingii" | Species=="Tegula quadricostata" | Species=="FIssurella maxima" | Species== "Fissurella latimarginata" | Species=="Taliepus sp." | Species== "Taliepus dentatus"| Species=="Tegula atra" | Species=="Fissurella spp." | Species=="Fissurella costata") %>% mutate(Functional.Group= case_when(Species == "Lessonia trabeculata" ~ "Primary producers",
-                                                                      TRUE ~  "Herbivore"), Biomasa=(0.0026)*((Size)^(2.12524))) %>% mutate(Biomasa=replace_na(Biomasa, 0)) %>% select(Site,Latitude, Transect, Replicate, Functional.Group, Species, Abundance, Biomasa)
-Herbivoros$Abundance<-as.numeric(Herbivoros$Abundance)
-
-### Calculo la biomasa por cada sitio y transecto
-
-Alga<-Herbivoros %>% filter(Functional.Group=="Primary producers") %>% group_by(Site, Latitude,Transect) %>% summarise(BiomasaLessonia=mean(Biomasa))
-
-### Calculo los herbivoros por cuadrante
-
-Herbivoros$Abundance<-as.numeric(Herbivoros$Abundance)
-herbQuad<- Herbivoros %>% group_by(Site, Transect, Replicate, Functional.Group) %>% summarise(Abundances= sum(Abundance), Biomasa= sum(Biomasa))
-### Calculo los herbivoros promedio de herbivoros por transecto
-herbTransect<-herbQuad %>% group_by(Site, Transect, Functional.Group) %>% summarise(AbH= mean(Abundances))
-
-##uno las bases y saco 2 outliers
-correlacion<- Alga %>% left_join(herbTransect) %>% filter(AbH < 100)
-
-ggplot(correlacion, aes(x=AbH, y= BiomasaLessonia, colour= Site))+geom_point()+ labs(x= "Abundancia de Herbivoros m-2" ,y="Biomasa Kg/m2")
-```
 
 ####Variación latitudinal y temporal 2018-2019
 
@@ -677,15 +567,12 @@ anova(model2, test = "F")
 ```
 
 
-
-
 ####Correlación entre abundancia de herbívoros y biomasa de algas
 
 ```{r corr herb-alga}
 #Para el ano 2018 selecciono los herbivoros y las algas 
 
-Herbivoros<-IFOP1819 %>% filter(Year=="2018", Species=="Tetrapygus niger" | Species =="Lessonia trabeculata" | Species=="Tegula tridentata" | Species=="Taliepus marginatus" | Species=="Loxechinus albus" | Species=="Taliepus sp" | Species== "Fissurella cumingii" | Species=="Tegula quadricostata" | Species=="FIssurella maxima" | Species== "Fissurella latimarginata" | Species=="Taliepus sp." | Species== "Taliepus dentatus"| Species=="Tegula atra" | Species=="Fissurella spp." | Species=="Fissurella costata") %>% mutate(Functional.Group= case_when(Species == "Lessonia trabeculata" ~ "Primary producers",
-                                                                      TRUE ~  "Herbivore"), Biomasa=(0.0026)*((Size)^(2.12524))) %>% mutate(Biomasa=replace_na(Biomasa, 0)) %>% select(Site,Latitude, Transect, Replicate, Functional.Group, Species, Abundance, Biomasa)
+Herbivoros<-IFOP1819 %>% filter(Year=="2018", Species=="Tetrapygus niger" | Species =="Lessonia trabeculata" | Species=="Tegula tridentata" | Species=="Taliepus marginatus" | Species=="Loxechinus albus" | Species=="Taliepus sp" | Species== "Fissurella cumingii" | Species=="Tegula quadricostata" | Species=="FIssurella maxima" | Species== "Fissurella latimarginata" | Species=="Taliepus sp." | Species== "Taliepus dentatus"| Species=="Tegula atra" | Species=="Fissurella spp." | Species=="Fissurella costata") %>% mutate(Functional.Group= case_when(Species == "Lessonia trabeculata" ~ "Primary producers", TRUE ~  "Herbivore"), Biomasa=(0.0026)*((Size)^(2.12524))) %>% mutate(Biomasa=replace_na(Biomasa, 0)) %>% select(Site,Latitude, Transect, Replicate, Functional.Group, Species, Abundance, Biomasa)
 Herbivoros$Abundance<-as.numeric(Herbivoros$Abundance)
 
 ### Calculo la biomasa por cada sitio y transecto
@@ -698,6 +585,7 @@ Herbivoros$Abundance<-as.numeric(Herbivoros$Abundance)
 herbQuad<- Herbivoros %>% group_by(Site, Transect, Replicate, Functional.Group) %>% summarise(Abundances= sum(Abundance), Biomasa= sum(Biomasa))
 ### Calculo los herbivoros promedio de herbivoros por transecto
 herbTransect<-herbQuad %>% group_by(Site, Transect, Functional.Group) %>% summarise(AbH= mean(Abundances))
+
 
 ##uno las bases y saco 2 outliers
 correlacion<- Alga %>% left_join(herbTransect) %>% filter(AbH < 100)
@@ -736,6 +624,8 @@ LatBiomass
 ```
 
 
+
+
 ## Morfología
 
 ```{r morfoLess}
@@ -756,6 +646,8 @@ plot(pcaMORFO , type = "l")
 summary(pcaMORFO)
 biplot(pcaMORFO)
 ```
+
+
 
 ##Temperatura Quintay
 ```{r TempQuintay}
