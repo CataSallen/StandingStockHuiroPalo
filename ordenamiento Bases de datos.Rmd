@@ -497,3 +497,28 @@ summary(pcaMORFO)
 biplot(pcaMORFO)
 ```
 
+##Temperatura Quintay
+```{r TempQuintay}
+Quintay<-read.csv("TemperaturaQuintay.csv", dec = ",") %>% unite(fecha, c(2:4), sep = "-")
+ggplot(Quintay, aes(x=fecha, y=Temperatura)) + geom_point(aes( ))
+```
+
+##Datos Lessonia Quintay 
+
+```{r}
+Quintay1217<-Alldata %>% filter(Site=="QuintayOA" | Site=="Quintay exposed"| Site=="QuintayAMERB") %>% mutate(Group= rep("Macroalga parda", times=length(Series)))
+Quintay1819<-Ltrabeculata %>%  filter(Site=="Quintay sur"| Site=="QuintayAMERB")
+Quintay1219<-rbind(Quintay1217,Quintay1819)
+
+QuiAMERBquad<- Quintay1219 %>% filter(Site=="QuintayAMERB") %>% group_by(Year, Site, Date, Latitude, Longitude, Transect, Station, Replicate) %>% summarise(Biomasa= sum(Biomass))
+
+
+ggplot(QuiAMERBquad, aes(x=Year, y=Biomasa)) + geom_smooth()+ geom_point() 
+   
+
+QuiAMERBmeanquad<- QuiAMERBquad %>% group_by(Year, Site, Latitude, Longitude) %>% summarise(Biomasam2=mean(Biomasa))
+
+#x=interaction(year,quarter)
+
+```
+
