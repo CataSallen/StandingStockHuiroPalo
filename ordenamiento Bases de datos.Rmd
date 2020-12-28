@@ -773,6 +773,7 @@ Quintay1219<-rbind(Quintay1217,Quintay1819)
 QuiAMERBquad<- Quintay1219 %>% filter(Site=="QuintayAMERB") %>% group_by(Year, Site, Date, Latitude, Longitude, Transect, Station, Replicate) %>% summarise(Biomasa= sum(Biomass))
 
 
+
 ggplot(QuiAMERBquad, aes(x=Year, y=Biomasa)) + geom_smooth()+ geom_point() 
    
 
