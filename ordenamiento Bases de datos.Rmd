@@ -192,8 +192,6 @@ cond3= (F1140841$Site== "QuintayAMERB")
 F1140841$Latitude[cond3] = "-33.19193931"
 F1140841$Longitude[cond3] = "-71.70033633"
 
-condYSu14.2= (F1140841$Season== "summer2014")
-F1140841$Year[condYSu14.2] = "2014"
 ```
 
 ###2015-2017
@@ -771,7 +769,6 @@ Quintay1819<-Ltrabeculata %>%  filter(Site=="Quintay sur"| Site=="QuintayAMERB")
 Quintay1219<-rbind(Quintay1217,Quintay1819)
 
 QuiAMERBquad<- Quintay1219 %>% filter(Site=="QuintayAMERB") %>% group_by(Year, Site, Date, Latitude, Longitude, Transect, Station, Replicate) %>% summarise(Biomasa= sum(Biomass))
-
 
 
 ggplot(QuiAMERBquad, aes(x=Year, y=Biomasa)) + geom_smooth()+ geom_point() 
