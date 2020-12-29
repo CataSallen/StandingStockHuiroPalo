@@ -1,0 +1,269 @@
+---
+title: "Productividad Lessonia"
+author: "Catalina Ruz"
+date: "29 de diciembre de 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning=FALSE, error = F, message = F)
+library(tidyverse) #metalibrary para ordenar 
+library(knitr)
+library(gridExtra)
+library(kableExtra)
+library(stringr)
+library(readxl)
+```
+
+## Relación Talla-Peso 
+
+Con datos obtenidos en 5 AMERB desde los 23º a los 36ºS, se estableció la relación entre el Diámetro máximo del disco y el peso del alga.
+Con esta relación se estimaron los parámetros para establecer la relación alométrica dada por la ecuación:
+
+$$
+  \begin{aligned}
+  B = aL^b 
+  \end{aligned}
+$$ 
+
+
+
+```{r dfTallaPeso, echo=FALSE}
+
+Peso<-read.csv("pesoalgasIFOP.csv") %>% filter(Especie == "Lessonia trabeculata") %>% mutate(logPeso= log(peso), logDisco= log(Diametro.extraida)) %>% mutate(Latitude =rep("", times=length(AMERB), Longitud= rep("", times= length(AMERB))))
+Peso$AMERB <- gsub("Quintay sector B", "Quintay protected", Peso$AMERB)
+Peso$AMERB <- gsub("Quintay sector A", "Quintay protected", Peso$AMERB)
+
+
+conQ= (Peso$AMERB== "Quintay protected")
+Peso$Latitude[conQ] = "-33.185000"
+Peso$Longitude[conQ] = "-71.691650"
+
+conC= (Peso$AMERB== "Cobquecura")
+Peso$Latitude[conC] = "-36.164765"
+Peso$Longitude[conC] = "-72.816642"
+
+conV= (Peso$AMERB== "Ventana")
+Peso$Latitude[conV] = "-32.735717"
+Peso$Longitude[conV] = "-71.503350"
+
+conVi= (Peso$AMERB== "Los Vilos sector C")
+Peso$Latitude[conVi] = "-31.934100"
+Peso$Longitude[conVi] = "-71.517767"
+
+conCa= (Peso$AMERB== "Carrizal Bajo")
+Peso$Latitude[conCa] = "-28.040500"
+Peso$Longitude[conCa] = "-71.152083"
+
+conPY= (Peso$AMERB== "Punta el Yeso")
+Peso$Latitude[conPY] = "-23.415222"
+Peso$Longitude[conPY] = "-70.600943"
+
+```
+
+```{r plotTallaPeso}
+
+ggplot(Peso, aes(x=Diametro.extraida , y=peso, group=Latitude))+ geom_point(aes(color=Latitude))+ geom_smooth(method= "lm", formula = Diametro.extraida~ log(peso), linetype=1, aes(color="model3"))
+
+ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_point(aes(color=Latitude))
+
+
+```
+
+```{r GLMTallaPeso}
+modelTallaPeso<-glm(peso~I(log(Diametro.extraida))+AMERB, family = quasipoisson, data=Peso)
+summary(modelTallaPeso)
+anova(modelTallaPeso, test = "F")
+
+```
+
+
+
+##Bases de datos Lessonia trabeculata
+```{r 2012-2014}
+F11110351<-read.csv("2012-2014.csv") %>% filter(Subset == "Kelp") %>% select(-c(Subset,Transects,Temperature, Visbility,DepthRange,Holdfast.Use,Blade.Use,Cover, allometric, a,b, Biomass)) %>% mutate(DF= rep("F11110351", times= length(Site)), Stipes= rep("NA", times=length(Site)), Length=rep("NA", times=length(Site)))
+F11110351$Site<-as.character(F11110351$Site)
+
+##cambio de nombre a un sitio para std con otras bd
+F11110351$Site <- gsub("LosMolles", "Los Molles protected", F11110351$Site)
+condYF12= (F11110351$Season== "Fall2012")
+F11110351$Year[condYF12] = "2012"
+condYS12= (F11110351$Season== "Spring2012")
+F11110351$Year[condYS12] = "2012"
+condYF13= (F11110351$Season== "Fall2013")
+F11110351$Year[condYF13] = "2013"
+condYS13= (F11110351$Season== "Spring2013")
+F11110351$Year[condYS13] = "2013"
+condYSu14= (F11110351$Season== "Summer 2014")
+F11110351$Year[condYSu14] = "2014"
+```
+
+```{r 2015}
+
+F1140841<-read.csv("2015.csv") %>% filter(Subset == "kelp") %>% select(-c(Subset,Temperature, Visbility, Holdfast.Use,Blade.Use,Cover...,X,Biomass)) %>% mutate(DF= rep("F1140841", times= length(Site)), Length=rep("NA", times=length(Site)), Year=rep("2015", times=length(Site))) %>% rename(Stipes= "no..stipes", Size= "Size.cm.", Station="station")
+
+F1140841$Site <- gsub("Quintay", "QuintayAMERB", F1140841$Site)
+F1140841$Site <- gsub("El Franc\x8es", "TotoralilloOA", F1140841$Site)
+F1140841$Site <- gsub("Algarrobo", "AlgarroboOA", F1140841$Site)
+F1140841$Season <- gsub("summer 2014", "summer2014", F1140841$Season)
+#Rellenar coordenadas
+
+cond1= (F1140841$Site== "AlgarroboOA")
+F1140841$Latitude[cond1] = "-33.36483661"
+F1140841$Longitude[cond1] = "-71.69101847"
+
+cond2= (F1140841$Site== "TotoralilloOA")
+F1140841$Latitude[cond2] = "-30.0939569"
+F1140841$Longitude[cond2] = "-71.37972619"
+
+cond3= (F1140841$Site== "QuintayAMERB")
+F1140841$Latitude[cond3] = "-33.19193931"
+F1140841$Longitude[cond3] = "-71.70033633"
+
+```
+
+```{r 2015-2017}
+F1151094<-read.csv("2015-2017.csv") %>% filter(Habitat == "kelp") %>% mutate(date=Date) %>% separate(date, into= c("Day","Month", "Year"), sep="-") %>% select(-c(Survey,Habitat,Day, Month,Sampler, High.1,High.2, Mean.High,comentario,Data_Entry,Num_parches)) %>%
+  mutate(DF=rep("F1151094", times=611), 
+         Season=rep("NA", times=length(Site)), 
+         Latitude=rep("NA", times=length(Site)), 
+         Longitude=rep("NA", times=length(Site)), 
+         Phase=rep("NA", times=length(Site))) %>% rename(Series ="serie",  Station= "Station.replicate", Replicate= "Pseudoreplicate",Size= "Width") 
+
+#Reemplazamos en la columna año 15 x 2015
+F1151094$Year[F1151094$Year=="15"]= "2015"
+#Cambio de nombre de los sitios
+F1151094$Site[F1151094$Site == "Quintay "] = "Quintay"
+F1151094$Site[F1151094$Site == "LosMolles"] = "Los Molles"
+F1151094$Site <- paste(F1151094$Site,F1151094$Exposure)
+##Rellenamos las columnas de latitud y longitud
+condicion1= (F1151094$Site== "Quintay exposed")
+condicion2= (F1151094$Site== "Quintay protected")
+condicion5= (F1151094$Site== "Quintay protected")
+condicion3= (F1151094$Site== "Los Molles exposed")
+condicion4= (F1151094$Site== "Los Molles protected")
+#Completamos las coordenadas
+F1151094$Latitude[condicion1] = "-33.143806"
+F1151094$Longitude[condicion1]= "-71.711944"
+F1151094$Latitude[condicion2] = "-33.19193931"
+F1151094$Longitude[condicion2] = "-71.70033633"
+F1151094$Latitude[condicion3] = "-32.23857"
+F1151094$Longitude[condicion3] = "-71.52684"
+F1151094$Latitude[condicion4] = "-32.230642"
+F1151094$Longitude[condicion4] = "-71.523598"
+
+condicion5=(F1151094$Zone =="shallow") & (F1151094$Transect =="1")
+F1151094$Transect[condicion5] = "4"
+condicion6=(F1151094$Zone =="shallow") & (F1151094$Transect =="2")
+F1151094$Transect[condicion6] = "5"
+condicion7=(F1151094$Zone =="shallow") & (F1151094$Transect =="3")
+F1151094$Transect[condicion7] = "6"
+F1151094std= F1151094 %>% select(-c(Exposure,Zone)) %>% mutate(Season=rep("NA", times=length(Site)))
+F1151094std$Site <- gsub("Quintay protected", "QuintayAMERB", F1151094std$Site)
+```
+
+```{r Biomasa2012-2017}
+Alldata= rbind(F11110351,F1140841,F1151094std)
+Alldata$Size<-as.numeric(Alldata$Size)
+#Según de B= 0.0026*L^(2.12524)
+Alldata$Biomass= (0.0026)*((Alldata$Size)^(2.12524))
+
+```
+
+```{r 2018, echo=FALSE}
+#DF de los cuadrantes submareales 
+ifop18<-read.csv("2018.csv") %>% select(-c(Dia,Mes, Presencia,Abundancia.en.alga,Abundancia.en.sustrato,Chico..total,Chico.en.alga,Chico.en.sustrato,Mediano.total,Mediano.en.alga,Mediano.en.sustrato,Grande.total,Grande.en.alga,Grande.en.sustrato,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie", Date= "Fecha", Year= "Ano", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad..m.",Group="Tipo.de.especie", Species="Especie", Abundance="Abundancia.total",Size="Diametro.del.disco", Stipes="No.estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=length(Series)), DF= rep("ifop2018", times= length(Series)), Station=replicate(1, Replicate),Phase= rep("NA", times=length(Series)),Frondosity= rep("NA", times=length(Series))) 
+
+
+##Cambio en el nombre de los sitios
+ifop18$Site <- gsub("Quintay sector B", "Quintay sur", ifop18$Site)
+ifop18$Site <- gsub("Quintay sector A", "QuintayAMERB", ifop18$Site)
+ifop18$Site <- gsub("Cha\x96aral de aceituno sector C", "Chanaral AMERB", ifop18$Site)
+ifop18$Site <- gsub("Reserva Cha\x96aral de aceituno", "Chanaral Reserva", ifop18$Site)
+ifop18$Site <- gsub("Reserva Cha\x96aral de Aceituno", "Chanaral Reserva", ifop18$Site)
+ifop18$Site <- gsub("Punta El Yeso", "Punta el Yeso", ifop18$Site)
+ifop18$Group <- gsub("Macroalga", "Macroalga parda", ifop18$Group)
+ifop18$Group <- gsub("Macroalga parda parda", "Macroalga parda", ifop18$Group)
+ifop18$Site<-as.factor(ifop18$Site)
+ifop18$Transect<-as.integer(ifop18$Transect)
+
+## Join by site-transect para poner unir la info de las coordenadas de los transectos en los cuadrantes
+ifop_coordenadas18<-left_join(ifop18,transectsub2)
+
+
+###Sin embargo, para findes de gráfica, las Coordenadas serán incluidas manualmente en la base de datos ifop18
+
+condicion8= (ifop18$Site== "Carrizal bajo")
+ifop18$Longitude[condicion8]="-71.152083"
+ifop18$Latitude[condicion8]="-28.040500" 
+  
+condicion9= (ifop18$Site== "Chanaral AMERB")
+ifop18$Latitude[condicion9]="-29.132117" 
+ifop18$Longitude[condicion9]="-71.489500"
+
+condicion10= (ifop18$Site== "Cobquecura")
+ifop18$Latitude[condicion10]="-36.164765" 
+ifop18$Longitude[condicion10]="-72.816642"
+
+condicion11= (ifop18$Site== "ECIM")
+ifop18$Latitude[condicion11]="-33.504383" 
+ifop18$Longitude[condicion11]="-71.633250"
+  
+condicion12= (ifop18$Site== "Los Vilos sector C")
+ifop18$Latitude[condicion12]="-31.934100"
+ifop18$Longitude[condicion12]="-71.517767"
+  
+condicion13= (ifop18$Site== "Punta el Yeso")
+ifop18$Latitude[condicion13]="-23.415222" 
+ifop18$Longitude[condicion13]="-70.600943"
+
+condicion14= (ifop18$Site== "QuintayAMERB")
+ifop18$Latitude[condicion14]="-33.185000" 
+ifop18$Longitude[condicion14]="-71.691650"
+
+condicion15= (ifop18$Site== "Quintay sur")
+ifop18$Latitude[condicion15]="-33.204333" 
+ifop18$Longitude[condicion15]="-71.703750"
+
+condicion16= (ifop18$Site== "Chanaral Reserva")
+ifop18$Latitude[condicion16]="-29.025167" 
+ifop18$Longitude[condicion16]="-71.565917"
+
+condicion17= (ifop18$Site== "Ventanas")
+ifop18$Latitude[condicion17]="-32.735717" 
+ifop18$Longitude[condicion17]="-71.503350"
+
+```
+
+```{r ifop19, echo=FALSE}
+
+#DF de los cuadrantes submareales 
+ifop19<-read.csv("2019.csv") %>% select(-c(Dia,Mes,Metros.del.transecto,Abundancia.herbivoros,Frondosidad,Observaciones,Muestreado.por,Anotado.por,Ingresado.por)) %>% rename(Series="Serie",Year="Ano", Date= "Fecha", Site= "AMERB", Transect="Transecto", Replicate="Cuadrante", Depth="Profundidad",Group="Tipo.de.especie", Species="Especie", Abundance="Abundancia.Huiro",Size="Diametro.del.disco", Stipes="estipes",Length = "Largo") %>% mutate(Season=rep("NA", times=length(Series)), DF= rep("ifop2019", times= length(Series)),Station=replicate(1, Replicate),Phase= rep("NA", times=length(Series)),Frondosity= rep("NA", times=length(Series))) ##agregamos Station que en este muestreo es lo mismo que nuestras unidaddes muestreales que son llamadas por la variable Replicate
+
+ifop19$Size<-as.numeric(ifop19$Size)
+ifop19$Site <- gsub("Quintay B", "Quintay sur", ifop19$Site)
+ifop19$Site <- gsub("Quintay A", "QuintayAMERB", ifop19$Site)
+
+
+## Join by site-transect para poner unir la info de las coordenadas de los transectos en los cuadrantes
+ifop_coordenadas19<-left_join(ifop19,transectsub19)
+
+
+##Igual que antes, para findes de gráfica, las Coordenadas fueron incluidas manualmente en ifop19 
+
+condicion18= (ifop19$Site== "Ventanas")
+ifop19$Latitude[condicion18]="-32.735717" 
+ifop19$Longitude[condicion18]="-71.503350"
+condicion19= (ifop19$Site== "Cobquecura")
+ifop19$Latitude[condicion19]="-36.164765" 
+ifop19$Longitude[condicion19]="-72.816642"
+condicion20= (ifop19$Site== "QuintayAMERB")
+ifop19$Latitude[condicion20]="-33.185000" 
+ifop19$Longitude[condicion20]="-71.691650" 
+condicion21= (ifop19$Site== "Quintay sur")
+ifop19$Latitude[condicion21]="-33.204333" 
+ifop19$Longitude[condicion21]="-71.703750"
+
+
+ifop2019<-ifop19 %>% mutate(Abundance = str_replace(Abundance, "-","NA"))##[1] 1  0   -, tenemos un - que debería ser un NA por que la abundancia no aplica a los datos que presentan este simbolo (animales).
+```
