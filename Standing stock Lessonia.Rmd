@@ -245,6 +245,7 @@ ifop19$Site <- gsub("Quintay B", "Quintay sur", ifop19$Site)
 ifop19$Site <- gsub("Quintay A", "QuintayAMERB", ifop19$Site)
 
 
+
 ## Join by site-transect para poner unir la info de las coordenadas de los transectos en los cuadrantes
 ifop_coordenadas19<-left_join(ifop19,transectsub19)
 
