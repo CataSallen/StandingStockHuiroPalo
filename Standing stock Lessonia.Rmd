@@ -71,10 +71,17 @@ ggplot(Peso, aes(x=logDisco , y=logPeso, group=Latitude))+ geom_point(aes(color=
 ```
 GLM relación Talla-Peso
 ```{r GLMTallaPeso}
-modelTallaPeso<-glm(peso~I(log(Diametro.extraida))+AMERB, family = quasipoisson, data=Peso)
+modelTallaPeso_lm1<-lm(peso~Diametro.extraida, data=Peso)
+summary(modelTallaPeso_lm1)
+exp(modelTallaPeso_lm1$coefficients)
+
+modelTallaPeso_lm<-lm(log(peso)~log(Diametro.extraida), data=Peso)
+summary(modelTallaPeso_lm)
+exp(modelTallaPeso_lm$coefficients)
+modelTallaPeso<-glm(peso~I(log(Diametro.extraida)), family = poisson, data=Peso)
 summary(modelTallaPeso)
 anova(modelTallaPeso, test = "F")
-
+#Biomass=(0.002621853)*((Size)^(2.312)))
 ```
 NLS relación Talla-Peso
 ```{r nlsTallaPeso}
@@ -193,19 +200,31 @@ Calculamos la biomasa para las bases de datos de los años 2012 al 2017 (fondecy
 ```{r Biomasa 2012-2017, echo=T}
 #BASES DE DATOS DEL 2012 AL 2017
 Alldata= rbind(F11110351,F1140841,F1151094std)
+Alldata$Season <- gsub("Summer 2014", "Summer 2015", Alldata$Season)
+Alldata$Season <- gsub("summer 2014", "Summer 2015", Alldata$Season)
 Alldata$Size<-as.numeric(Alldata$Size)
 Alldata$Abundance<-as.numeric(Alldata$Abundance)
 
 #Según de B=aL^b
 
-Alldata$Biomass= (5.27993)*((Alldata$Size)^(2.12524))/1000##Esta es la correcta!
+Alldata$Biomass= (0.002621853)*((Alldata$Size)^(2.312))##Esta es la correcta!
 #Biomasa por sitio y temporada 2012-2013
 #suma de algas por cuadrantes
 
 Quad<-Alldata %>% filter(DF=="F11110351", Season !="Summer 2014") %>% group_by(Year, Season,Site,Latitude,Transect, Station, Replicate) %>% summarise(Abun= sum(Abundance),Biomassm2= sum(Biomass))
 #promedio de los cuadrantes por sitio
-Site<-Quad %>% group_by(Year, Season, Site, Latitude) %>% summarise(SumaBiomasaQ=mean(Biomassm2), se= sd(Biomassm2)/sqrt(length(Transect)))
+Site<-Quad %>% group_by(Year, Season, Site, Latitude) %>% summarise(SumaBiomasaQ=mean(Biomassm2), se= sd(Biomassm2)/sqrt(length(Transect)), MeanAbQ=mean(Abun), se= sd(Abun)/sqrt(length(Transect)))
+
 Site$Season<- factor(Site$Season, levels = c("Fall2012", "Spring2012","Fall2013", "Spring2013"))
+
+ZapallarStation<- Quad %>% 
+  group_by (Year, Season, Transect, Station) %>% filter(Site=="ZapallarAmerb") %>%
+  summarise(Biomasa=mean(Biomassm2), 
+            Abundancia=mean(Abun))
+
+
+ZapallarSeason<-ZapallarStation %>% group_by(Season) %>% summarise(meanAb=mean(Abundancia), se=sd(Abundancia)/sqrt(length(Transect)), meanB=mean(Biomasa), se=sd(Biomasa)/sqrt(length(Transect)))
+
 ```
 
 ```{r 2018, echo=FALSE}
@@ -302,7 +321,7 @@ ifop2019<-ifop19 %>% mutate(Abundance = str_replace(Abundance, "-","NA"))##[1] 1
 #unimos los datos 2018 y 2019
 IFOP1819<- rbind(ifop18,ifop2019)
 
-Ltrabeculata<-IFOP1819 %>% filter (Group=="Macroalga parda") %>% filter(Species !="Lessonia berteroana"& Species !="Macrocystis pyrifera") %>% mutate(Biomass=(5.27993)*((Size)^(2.12524)/1000)) %>% mutate(Biomass=replace_na(Biomass, 0)) %>%  mutate(Size= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Size)), Stipes= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Stipes)), Length= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Length)))
+Ltrabeculata<-IFOP1819 %>% filter (Group=="Macroalga parda") %>% filter(Species !="Lessonia berteroana"& Species !="Macrocystis pyrifera") %>% mutate(Biomass=(0.002621853)*((Size)^(2.312))) %>% mutate(Biomass=replace_na(Biomass, 0)) %>%  mutate(Size= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Size)), Stipes= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Stipes)), Length= case_when(Abundance=="0"~ "0", TRUE ~ as.character(Length)))
 
 Ltrabeculata$Abundance<-as.numeric(Ltrabeculata$Abundance)
 Ltrabeculata$Size<-as.numeric(Ltrabeculata$Size)
@@ -312,9 +331,27 @@ Ltrabeculata$Depth<-as.numeric(Ltrabeculata$Depth)
 
 Quad1819<-Ltrabeculata %>%  group_by(DF,Year,Site,Latitude,Transect, Replicate) %>% summarise(Depth=mean(Depth), Size=mean(Size), Biomassm2= sum(Biomass), Abm2=sum(Abundance),Stipes=mean(Stipes), Length=mean(Length))
 
-Biomasa1819<- Quad1819 %>% group_by(Year, Site,Latitude) %>% summarise(B= mean(Biomassm2) , se= sd(Biomassm2)/sqrt(length(Transect)))
+Biomasa1819<- Quad1819 %>% group_by(Year, Site,Latitude) %>% summarise(B= mean(Biomassm2) , se= sd(Biomassm2)/sqrt(length(Transect)), Density=mean(Abm2), Densityse=sd(Abm2)/sqrt(length(Abm2)))
 Biomasa18<-Biomasa1819 %>% filter(Year=="2018") %>% select(c(Site, Latitude,B,se))
 
+```
+
+##Unión bases de datos
+Se unirán las bases de datos para tener una sola planilla que esté disponible para todo el laboratorio
+
+```{r}
+IFOP1819$Transect<-as.character(IFOP1819$Transect)
+IFOP1819$Station<-as.character(IFOP1819$Station)
+IFOP1819$Abundance<-as.numeric(IFOP1819$Abundance)
+Alldata$Replicate<-as.integer(Alldata$Replicate)
+df_Trabeculata_Subelab<-full_join(Alldata,IFOP1819) %>% select(Year,Site,Season, Date, Latitude, Longitude,Transect,Station,Depth, Replicate, Species,Abundance, Size, Stipes, Length,Frondosity,Biomass) %>% filter(Species=="Lessonia trabeculata")
+
+df_Trabeculata_Subelab$Site<-as.factor(df_Trabeculata_Subelab$Site)
+df_Trabeculata_Subelab$Biomass= (0.002621853)*((df_Trabeculata_Subelab$Size)^(2.312))
+df_Trabeculata_Subelab$Length<-as.numeric(df_Trabeculata_Subelab$Length)
+df_Trabeculata_Subelab$Stipes<-as.numeric(df_Trabeculata_Subelab$Stipes)
+
+write.csv(df_Trabeculata_Subelab, "df_Trabeculata_Subelab.csv")
 ```
 
 
@@ -322,8 +359,6 @@ Biomasa18<-Biomasa1819 %>% filter(Year=="2018") %>% select(c(Site, Latitude,B,se
 
 
 ###Biomasa 2012-2013
-
-
 ```{r plot Biomasa 2012-2013, echo=F}
 
 Latvar1213<- ggplot(Site, aes(x=Latitude, y=SumaBiomasaQ, group=Season))+ geom_line(aes(color=Season))+ geom_point(aes(color=Season, shape=Year),size = 3)+ ggtitle('Biomasa Lessonia trabeculata 2012-2013')+
@@ -345,6 +380,15 @@ LATvar18<-ggplot(data=Biomasa18, aes(x=Latitude, y=B, group=Year, colour=Year)) 
     labs(y="Biomasa/m2", x="Site")
 LATvar18
 
+
+SITEvar18<-ggplot(data=Biomasa18, aes(x=Site, y=B, group=Year, colour=Year)) +
+    geom_line(colour = "black") +
+    geom_point(aes(color = Year),colour = "black")+
+    geom_errorbar(aes(ymin=B-se, ymax= B+se),width=.2,position=position_dodge(.9),colour= "black")+
+    theme_classic()+
+    ggtitle('Biomasa Lessonia trabeculata 2018') +
+    labs(y="Biomasa/m2", x="Site")
+SITEvar18
   
 ```
 ### Biomasa 2018-2019
@@ -363,37 +407,121 @@ Biomasa1819bplot
 
 ### Biomasa 2019-NERC
 ```{r}
-nerc19<-read.csv("KelpQuads.csv")%>% mutate(Biomass=(5.27993)*((Holdfast.Diameter)^(2.12524)/1000))
-nerc19$Number.of.Primary.Stipes<-as.numeric(nerc19$Number.of.Primary.Stipes)
+nerc19<-read.csv("KelpQuads.csv")%>% mutate(Biomass=(5.27993)*((Holdfast.Diameter)^(2.12524)/1000)) %>% filter(Biomass <=50)
+nerc19$Number.of.Primary.Stipes<-as.numeric(nerc19$Number.of.Primary.Stipes) 
+
 Quadnerc19<-nerc19 %>%  group_by(Site,Transect.Number, Quadrat.Number) %>% summarise(Depth=mean(Depth, na.rm = T), Size=mean(Holdfast.Diameter, na.rm = T), Biomassm2= sum(Biomass,  na.rm = T), Abm2=length(Kelp.Individual.Number),Stipes=mean(Number.of.Primary.Stipes,  na.rm = T), Length=mean(Total.Length,  na.rm = T))
 
 
-BiomasaNerc19<- Quadnerc19 %>% group_by(Site) %>% summarise(B= mean(Biomassm2, na.rm = T) , se= sd(Biomassm2, na.rm = T)/sqrt(length(Transect.Number)))
+BiomasaNerc19<- Quadnerc19 %>% group_by(Site) %>% summarise(B= mean(Biomassm2, na.rm = T) , se= sd(Biomassm2, na.rm = T)/sqrt(length(Transect.Number)), Abundancem2=mean(Abm2, na.rm = T) , seAb= sd(Abm2, na.rm = T)/sqrt(length(Transect.Number)), Sizem2=mean(Size, na.rm = T) , seSize= sd(Size, na.rm = T)/sqrt(length(Transect.Number)), Estipesm2=mean(Stipes, na.rm = T) , seEstipe= sd(Stipes, na.rm = T)/sqrt(length(Transect.Number)))
 
 ```
 
+```{r}
+TallaPeso<-ggplot(nerc19, aes(x=Holdfast.Diameter , y=Biomass, group=Site))+ geom_point(aes(color=Site))+ geom_smooth(method= "lm", formula = Holdfast.Diameter~ Biomass, linetype=1, aes(color="model3"))
+TallaPeso
+```
+
+
+
+
+
+
 ```{r plot Biomasa NERC19}
-BiomasaNERC19plot<-ggplot(BiomasaNerc19, aes(x=fct_relevel(Site, "Isla Grande de Atacama","Puerto Viejo","Chanaral de Aceituno TURF","Chanaral de Aceituno OA","Los Mollies OA", "La Ballena TURF"), y=B)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ 
+#BIOMASA
+BIOMASA<-ggplot(BiomasaNerc19, aes(x=fct_relevel(Site, "Isla Grande de Atacama","Puerto Viejo","Chanaral de Aceituno TURF","Chanaral de Aceituno OA","Los Mollies OA", "La Ballena TURF"), y=B)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ 
+labs(x= "Sitios" ,y="Biomasa Kg/m2")+ggtitle('Biomasa Lessonia trabeculata NERC 2019')+
+geom_errorbar(aes(ymin=B-se, ymax= B+se),width=.2,
+position=position_dodge(.9))+ theme_classic()+theme(axis.text.x = element_text(size = 12),axis.text.y=element_text(size=12), text=element_text(size=12)) 
+
+
+
+
+#Abundancia
+DENSIDAD<-ggplot(BiomasaNerc19, aes(x=fct_relevel(Site, "Isla Grande de Atacama","Puerto Viejo","Chanaral de Aceituno TURF","Chanaral de Aceituno OA","Los Mollies OA", "La Ballena TURF"), y=Abundancem2)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ 
+labs(x= "Sitios" ,y="Densidad ind/m2")+ggtitle('Densidad Lessonia trabeculata NERC 2019')+
+geom_errorbar(aes(ymin=Abundancem2-seAb, ymax= Abundancem2+seAb),width=.2,
+position=position_dodge(.9))+ theme_classic()
+
+#Diámetro de disco
+DISCO<-ggplot(BiomasaNerc19, aes(x=fct_relevel(Site, "Isla Grande de Atacama","Puerto Viejo","Chanaral de Aceituno TURF","Chanaral de Aceituno OA","Los Mollies OA", "La Ballena TURF"), y=Sizem2)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ 
+labs(x= "Sitios" ,y="Diámetro promedio/m2")+ggtitle('Diámetro disco Lessonia trabeculata NERC 2019')+
+geom_errorbar(aes(ymin=Sizem2-seSize, ymax= Sizem2+seSize),width=.2,
+position=position_dodge(.9))+ theme_classic()
+
+#Numero de estipes
+ESTIPES<-ggplot(BiomasaNerc19, aes(x=fct_relevel(Site, "Isla Grande de Atacama","Puerto Viejo","Chanaral de Aceituno TURF","Chanaral de Aceituno OA","Los Mollies OA", "La Ballena TURF"), y=B)) + geom_bar(position = "dodge", stat = "identity", size =.2)+ 
 labs(x= "Sitios" ,y="Biomasa Kg/m2")+ggtitle('Biomasa Lessonia trabeculata NERC 2019')+
 geom_errorbar(aes(ymin=B-se, ymax= B+se),width=.2,
 position=position_dodge(.9))+ theme_classic()
-BiomasaNERC19plot
-
-
 ```
-
 ```{r histogramas de str tallas NERC}
-nerc19$Site = factor(nerc19$Site, levels=c('Isla Grande de Atacama','Puerto Viejo','Chanaral de Aceituno TURF','Chanaral de Aceituno OA','Los Mollies OA','La Ballena TURF'))
-histHoldfast<-ggplot(data = nerc19, aes(x =Holdfast.Diameter )) +
-    geom_bar(breaks=seq(1,75,by=10), colour = "black", stat="count") + labs(x= "Diámetro del disco" ,y="Frecuencia")+theme_light()+facet_grid(.~Site)
 
-hist<-ggplot(data = nerc19, aes(x =Holdfast.Diameter )) +
-    geom_histogram(breaks=seq(1,60,by=5), colour = "red", fill = "green", stat="count") + theme_bw()+facet_grid(.~Site)
+
+nerc19$Site = factor(nerc19$Site, levels=c('Isla Grande de Atacama','Puerto Viejo','Chanaral de Aceituno TURF','Chanaral de Aceituno OA','Los Mollies OA','La Ballena TURF'))
+
+histHoldfast<-ggplot(data = nerc19, aes(x =Holdfast.Diameter )) +
+    geom_histogram(breaks=seq(1,75,by=10), colour = "black", stat="count") + labs(x= "Diámetro del disco" ,y="Frecuencia")+theme_bw()+facet_grid(.~Site)
+histHoldfast
+
+Estipes<-nerc19 %>% filter (Number.of.Primary.Stipes!="-") %>% filter(Number.of.Primary.Stipes!="")
+
+Estipes$Number.of.Primary.Stipes<-as.numeric(Estipes$Number.of.Primary.Stipes)
+
+histStipes<-ggplot(data = Estipes, aes(x =Number.of.Primary.Stipes)) +
+    geom_histogram(breaks=seq(1,23, by=5),colour = "black", stat="count") +
+  labs(x= "Número de estipes")+
+         theme_bw()+facet_grid(.~Site)
+histStipes
+
+histBiomass<-ggplot(data = nerc19, aes(x =Biomass)) +
+    geom_histogram(breaks=seq(1,75,by=10), colour = "black", stat="count") +
+  labs(x= "Biomasa")+
+         theme_bw()+facet_grid(.~Site)
+histBiomass
+
+histLT<-ggplot(data = nerc19, aes(x =Total.Length)) +
+    geom_histogram(breaks=seq(1,450,by=50), colour = "black", stat="count") +
+  labs(x= "Largo Total")+
+         theme_bw()+facet_grid(.~Site)
+histLT
+
+
+
 
 
 ```
+```{r diametro disco nerc}
+##diferencias entre diámetros de disco-TUCKEY
+library(multcompView)
+model=lm( nerc19$Holdfast.Diameter ~ nerc19$Site)
+ANOVA=aov(model, test = "F")
+ 
+# Tukey test to study each pair of treatment :
+TUKEY <- TukeyHSD(x=ANOVA, 'nerc19$Site', conf.level=0.95)
+ 
+# Tuckey test representation :
+plot(TUKEY , las=1 , col="brown")
+# I need to group the treatments that are not different each other together.
+generate_label_df <- function(TUKEY, variable){
+ 
+     # Extract labels and factor levels from Tukey post-hoc 
+     Tukey.levels <- TUKEY[[variable]][,4]
+     Tukey.labels <- data.frame(multcompLetters(Tukey.levels)['Letters'])
+     
+     #I need to put the labels in the same order as in the boxplot :
+     Tukey.labels$treatment=rownames(Tukey.labels)
+     Tukey.labels=Tukey.labels[order(Tukey.labels$treatment) , ]
+     return(Tukey.labels)
+     }
+LABELS <- generate_label_df(TUKEY , "nerc19$Site")
+
+###codigo obtenido en https://www.r-graph-gallery.com/84-tukey-test.html ####
+```
 
 
+
+Análisis GLM para 2012-2019
 ```{r GLM, echo=F}
 
 ##GLM 2012-2013 
@@ -568,9 +696,10 @@ library(vegan)
 library(MVA)
 library(tidyr)
 library(FactoMineR) ##PCA() es una función de este paquete
+library(factoextra)
 ##PCA morfologia 2018-TODOS LOS SITIOS
-MORFO<-Quad18 %>% select(Size, Stipes, Length, Biomassm2) %>% filter(!Size== 0, Stipes!="NaN", Length!="NaN",Biomassm2!="NaN") 
-pcaMORFO<-MORFO[,6:9]
+MORFO<-Quadnerc19 %>% dplyr::select(Size, Stipes, Length, Biomassm2) %>% filter(!Size== 0, Stipes!="NaN", Length!="NaN",Biomassm2!="NaN") 
+pcaMORFO<-MORFO[,3:6]
  
 pca<-PCA(pcaMORFO, scale.unit = TRUE)
 ##PCA morfologia 2018-POR REGION (23-30, 30-33, 36)
@@ -579,7 +708,19 @@ pca<-PCA(pcaMORFO, scale.unit = TRUE)
 
 #PCA planilla PESO
 morfoPeso<- Peso %>% select(peso,Diametro.extraida,Estipes, Largo.total) %>% filter(Largo.total!="NaN",Estipes!="NaN", Diametro.extraida!="NaN")
-pca<-PCA(morfoPeso, scale.unit = TRUE
+pca<-PCA(morfoPeso, scale.unit = TRUE)
+
+         
+##PCA nerc
+morfoPesoNERCsitio<- nerc19 %>% select(Site,Holdfast.Diameter,Number.of.Primary.Stipes, Total.Length,Biomass) %>% filter(Total.Length!="NaN",Number.of.Primary.Stipes!="NaN", Holdfast.Diameter!="NaN",Biomass!="NaN")
+morfoPesoNERCsitio$Number.of.Primary.Stipes<-as.numeric(morfoPesoNERCsitio$Number.of.Primary.Stipes)
+
+morfoPesoNERC<-morfoPesoNERCsitio[,2:5]
+rownames(morfoPesoNERC)<-paste(morfoPesoNERCsitio$Site)
+
+pca<-PCA(morfoPesoNERCsitio[,2:5], scale.unit = TRUE)
+
+fviz_ca_row(morfoPesoNERCsitio[,2:5], col.row = "black", geom.row = "point", pointsize = 3, shape.row = morfoPesoNERCsitio$Site)
 
 
 ```
@@ -592,6 +733,50 @@ pca<-PCA(morfoPeso, scale.unit = TRUE
 #hip. mayores densidades tienen menores biomasas
 
 
+
+```
+
+```{r clases de talla}
+df<-Ltrabeculata %>% mutate(SizeClass= case_when(Size >= 0.1 & Size <=5 ~ "1",
+                                        Size > 5 & Size <=10 ~ "2",
+                                        Size > 10 & Size <=15 ~ "3",
+                                        Size > 15 & Size <=20 ~ "4",
+                                        Size > 20 & Size <=25 ~ "5",
+                                        Size > 25 & Size <=30 ~ "6",
+                                        Size > 30 & Size <=35 ~ "7",
+                                        Size > 35 & Size <=40 ~ "8",
+                                        Size > 40 & Size <=45 ~ "9",
+                                        Size > 45 & Size <=50 ~ "10",
+                                        Size >50 ~ "11"), na.rm=T)
+df$SizeClass <- ordered(df$SizeClass, levels=c("1","2","3","4","5","6","7","8","9","10","11"))
+##Para el analisis seleccione solo chanral 2018
+chanaral<-df %>% filter(Year=="2018",Site=="Chanaral AMERB")
+##Calculo el promedio por clase de talla
+class18<-chanaral%>% group_by(SizeClass) %>% summarise(mean=mean(Biomass), se=sd(Biomass)/sqrt(length(SizeClass))) 
+
+##se añade el promedio como una columna a la base de datos de chanaral
+efecto<-full_join(chanaral,class18)
+## calculo la suma de cuadrados de las desviaciones de cada clase de talla 
+SC<-efecto %>% group_by(SizeClass)%>% summarise(dif=sum((Biomass-mean)^2))
+SCdentro<- SC %>% sum()
+
+mean_total<-df %>% filter(Year=="2018",Site=="Chanaral AMERB") %>% summarise(MEAN=mean(Biomass), SE=sd(Biomass))
+
+##
+CMdentro=SCd/a(n-1)
+CMentre=SCe/a-1
+#F
+
+  lamda=sum(Tk-T)2/var2
+  teta=sqrt(lamda/a)
+  
+    
+###plot por clase de talla
+ggplot(class18, aes(x=SizeClass, y=mean))+ 
+  geom_bar(position = "dodge", stat = "identity", size =.2)+ 
+labs(x= "Clases de talla (cm)" ,y="Biomasa Kg")+
+geom_errorbar(aes(ymin=mean-se, ymax= mean+se),width=.2,
+position=position_dodge(.9))+ theme_classic()+  facet_wrap(~ Site, nrow = 11) 
 
 ```
 
